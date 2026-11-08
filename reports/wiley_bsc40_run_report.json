@@ -1,0 +1,17 @@
+{
+  "base_official_mse": 201013.27709,
+  "base_submission": "submission_v2_post_v2_locked.csv",
+  "changed_test_rows": 4,
+  "sources": {
+    "2c": "Wiley 10.1002/cmdc.202100771 Table 1: CC50=2904.9, IC50=11.1",
+    "3c-ks-347": "Wiley 10.1002/cmdc.202100771 Table 1: CC50=946.8, IC50=2.2",
+    "tecovirimat/14": "ChEMBL1142975, DOI 10.1021/jm061484y: CC50>100, IC50=0.04 uM; conservative SI lower bound=2500"
+  },
+  "local_base_mse": 74041.22171950033,
+  "local_candidate_mse": 72892.61237320166,
+  "official_kaggle_mse_user_reported": 197909.42299,
+  "origin_chat": "Снижение MSE ниже 50 000",
+  "test_targets_used_for_prediction_or_selection": false,
+  "independent_local_evaluation": false,
+  "submission": "submission_v2_wiley_bsc40.csv"
+}

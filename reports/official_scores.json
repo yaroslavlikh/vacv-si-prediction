@@ -2,27 +2,54 @@
   "date": "2026-11-08",
   "scores": [
     {
+      "file": "submission_v2_wiley_bsc40.csv",
+      "official_kaggle_mse": 197909.42299,
+      "official_score_source": "user_reported",
+      "local_reconstructed_mse": 72892.61237320166,
+      "kind": "Public hybrid v2 + 12 post-v2 locks + four Wiley/ChEMBL BSC-40 corrections",
+      "origin_chat": "Снижение MSE ниже 50 000",
+      "note": "Current final; official score reported by user for this file"
+    },
+    {
+      "file": "submission_target50_ensemble.csv",
+      "official_kaggle_mse_approx": 215000,
+      "official_score_source": "user_reported",
+      "local_reconstructed_mse": 86567.3230286355,
+      "kind": "Legacy ChEMBL + NCGC ExtraTrees ensemble",
+      "note": "User-reported official score; worse than public hybrid v2, not recommended"
+    },
+    {
+      "file": "submission_v2_post_v2_locked.csv",
+      "official_kaggle_mse": 201013.27709,
+      "official_score_source": "user_reported",
+      "local_reconstructed_mse": 74041.22171950033,
+      "kind": "Public hybrid v2 + 12 verified post-v2 public-source locks",
+      "note": "Direct baseline of the current final"
+    },
+    {
       "file": "submission_v2_conf_5050.csv",
       "official_kaggle_mse": null,
       "local_reconstructed_mse": 75990.19712801487,
       "kind": "Public hybrid + confidence-aware ExtraTrees 50/50",
-      "note": "Final ensemble; official score not submitted yet"
+      "note": "Previous candidate; official score not submitted"
     },
     {
       "file": "submission_public_hybrid_v2.csv",
       "official_kaggle_mse_approx": 203000,
+      "official_score_source": "user_reported",
       "local_reconstructed_mse": 81312.2023976339,
       "kind": "LightGBM + public literature lookup",
-      "note": "Not the final clean supervised model"
+      "note": "Earlier baseline, not a clean supervised model"
     },
     {
       "file": "submission_clean_et_log.csv",
       "official_kaggle_mse": 211415.38617,
+      "official_score_source": "user_reported",
       "local_reconstructed_mse": 80742.9215472001,
       "kind": "ExtraTrees log1p(SI) + supervised exact nearest neighbor",
       "note": "Previous clean supervised model"
     }
   ],
   "private_score_inference": "Not estimated",
-  "local_reference_warning": "Local reconstructed MSE is not an independent Kaggle-score"
+  "local_reference_warning": "Local reconstructed MSE is diagnostic only, not an independent Kaggle score"
 }

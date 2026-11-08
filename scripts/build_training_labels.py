@@ -1,4 +1,5 @@
 from pathlib import Path
+import argparse
 import json
 import time
 import warnings
@@ -21,6 +22,14 @@ N_FOLDS = 5
 SCALE, CAP = 2.4, 4000
 EXT_WEIGHT = 0.1
 EXACT_SIMILARITY = 0.999
+
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument(
+    "--labels-only",
+    action="store_true",
+    help="Build external_training_labels.csv without training the auxiliary LightGBM model.",
+)
+args = parser.parse_args()
 
 
 def std_mol(s):
@@ -295,6 +304,9 @@ ext_scafs = np.array([scaffold(m) for m in ext_mols])
 ext_fps = [fp(m) for m in ext_mols]
 ext.to_csv(OUT / "external_training_labels.csv", index=False)
 print("External public training rows:", len(ext), "test structures covered:", len(set(ext_keys) & set(te_full_keys)), flush=True)
+if args.labels_only:
+    print("Labels-only mode: skipped auxiliary model training.", flush=True)
+    raise SystemExit(0)
 
 
 def fit_lgbm(Xfit, yfit, wfit, seed):

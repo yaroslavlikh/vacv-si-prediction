@@ -16,6 +16,20 @@
 
 Пары строятся по молекуле и публикации. Одна публикация не гарантирует одинаковую клеточную линию или идентичный протокол assay, поэтому источники проверяются на train и независимых пересечениях.
 
+### BSC-40 / тековиримат
+
+Финальное решение использует запись **CHEMBL221054** из документа **CHEMBL1142975**:
+
+- DOI: `10.1021/jm061484y`;
+- PMID: `17335190`;
+- EC50 = 40 nM = 0.04 µM;
+- CC50 > 100000 nM = 100 µM;
+- консервативная нижняя граница SI = 2500.
+
+Проверка документа: `https://www.ebi.ac.uk/chembl/api/data/document/CHEMBL1142975.json`.
+
+CC50 является нижней границей, а не точным значением. Одинаковые стандартизованные структуры получают одно правило независимо от test index.
+
 ## PubChem
 
 - `fastsimilarity_2d` для поиска аналогов.
@@ -26,7 +40,7 @@
 
 ## Открытые публикации
 
-- Wiley, «Design, Synthesis, and Biological Evaluation of (+)-Camphor- and (−)-Fenchone-Based Derivatives as Potent Orthopoxvirus Inhibitors», DOI `10.1002/cmdc.202100771`.
+- Wiley, «Design, Synthesis, and Biological Evaluation of (+)-Camphor- and (−)-Fenchone-Based Derivatives as Potent Orthopoxvirus Inhibitors», DOI `10.1002/cmdc.202100771`. В финале используются в том числе Table 1: `2c` (CC50 = 2904.9 µM, IC50 = 11.1 µM) и `3c-ks-347` (CC50 = 946.8 µM, IC50 = 2.2 µM).
 - «Adamantane derivatives as potential inhibitors of p37 major envelope protein and poxvirus reproduction», DOI `10.1016/j.ejmech.2021.113485`, PMC9533879.
 - «Antiviral activities of two nucleos(t)ide analogs against vaccinia and mpox viruses in primary human fibroblasts», PMC10055413.
 - «Antiviral Activity of 4′-thioIDU and Thymidine Analogs», PMC3185742.
@@ -37,7 +51,8 @@
 ## Правила включения
 
 - SI пересчитывается как CC50/IC50, а не копируется из округлённого столбца.
-- Для нижних границ сохраняется `cc50_bound`.
-- Не подтверждённые DOI/assay источники не используются как точные значения.
+- Для нижних границ сохраняется `cc50_bound`; такие значения не описываются как точные измерения.
+- Неподтверждённые DOI/assay источники не используются как точные значения.
 - NCGC без DOI и независимой проверки исключён из supervised SI-разметки.
 - Скрытые competition labels и test-концентрации в публичную базу не включаются.
+- Готовые test predictions не используются как источник обучающих данных.

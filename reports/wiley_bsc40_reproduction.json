@@ -1,0 +1,26 @@
+{
+  "status": "PASS",
+  "issues": [],
+  "notebook": "reproducible_v2_wiley_bsc40.ipynb",
+  "executed_notebook": "executed_v2_wiley_bsc40.ipynb",
+  "code_cells": 9,
+  "errors": 0,
+  "execution_complete": true,
+  "rows": 597,
+  "reproduced_sha256": "da08cc647f5127e23f4a321099df176f2d27040bbb45a2cdae799ee642396485",
+  "comparison": {
+    "reference_provided": true,
+    "reference_file": "submission_v2_wiley_bsc40.csv",
+    "reference_sha256": "577f520bb59e7396d0eea0cdee0e920e5cdeca826d6568d8023f8df1384d4dba",
+    "reproduced_sha256": "da08cc647f5127e23f4a321099df176f2d27040bbb45a2cdae799ee642396485",
+    "byte_identical": false,
+    "max_absolute_difference": 1.7053025658242404e-13,
+    "tolerance": 1e-08,
+    "numerically_verified": true
+  },
+  "official_kaggle_mse_user_reported": 197909.42299,
+  "local_reconstructed_mse": 72892.61237320166,
+  "local_reference_warning": "Diagnostic only; not an independent Kaggle score",
+  "test_targets_used_for_fit_or_selection": false,
+  "origin_chat": "Снижение MSE ниже 50 000"
+}

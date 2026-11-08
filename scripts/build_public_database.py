@@ -56,6 +56,8 @@ wiley = {
     "7l-as-529": ("CC1(C)[C@@H]2CC[C@@]1(C)[C@H](NC(=O)C1CCCCC1)C2", 542.9, 4.3),
     "8b-as-556": ("CC1(C)[C@@H]2CC[C@@]1(C)[C@@H](NC(=O)C1=CC=C(Cl)C=C1)C2", 3210.2, .24),
     "8c-as-536": ("CC1(C)[C@@H]2CC[C@@]1(C)[C@@H](NC(=O)C1=CC=C(Br)C=C1)C2", 1582.9, .36),
+    "2c": ("CC1(C)[C@@H]2CC[C@@]1(C)/C(=N/NC(=O)C1=CC=C(Br)C=C1)C2", 2904.9, 11.1),
+    "3c-ks-347": ("CC1(C)/C(=N\\NC(=O)C2=CC=C(Br)C=C2)[C@]2(C)CC[C@H]1C2", 946.8, 2.2),
 }
 for name, (smiles, cc50, ic50) in wiley.items():
     rows.append(record(smiles, ic50, cc50, "10.1002/cmdc.202100771", f"Wiley {name}"))
