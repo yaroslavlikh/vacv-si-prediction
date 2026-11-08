@@ -57,12 +57,15 @@ Pipeline этого эксперимента:
 
 Проверка сохранена в `reports/pmc953_reproduction.json`; проверка Wiley/BSC-40 — в `reports/wiley_bsc40_reproduction.json`.
 
-## Текущий финал: Wiley/BSC-40 + PMC9533879
+## Текущий финал: чистый ExtraTrees
 
-`reproducible_v2_pmc953_additions.ipynb` заново обучает 30 LightGBM-моделей и применяет публичные измерения с указанными источниками, включая Table 1 статьи PMC9533879. Готовые submissions, OOF, внешние модели и неподтверждённые SAR-числа не используются.
+`reproducible_clean_et_log.ipynb` обучает ExtraTrees на `log1p(SI)` и применяет supervised exact nearest neighbor. Литературный post-ML lookup, готовые внешние модели и неподтверждённые SAR-числа не используются.
 
-- Официальный Kaggle MSE: **197 909.42299** по загрузке пользователя.
-- Локальная диагностическая MSE: **72 687.72207**.
-- Проверка: `reports/final_reproduction.json` и `reports/pmc953_reproduction.json`.
+- Официальный Kaggle MSE: **211 415.38617** по загрузке пользователя.
+- Локальная диагностическая MSE: **80 742.92155**.
+- Canonical OOF no-max: **73 927.60**, no-top7: **25 791.78**.
+- Проверка: `reports/final_reproduction.json`.
+
+Прежний гибрид Wiley/BSC-40 + PMC9533879 сохранён как эксперимент с Kaggle MSE 197 909.42299.
 
 Локальная диагностика не является независимой оценкой и не используется для обучения или выбора финальных значений. Официальные результаты версий сохранены в `reports/official_scores.json`.

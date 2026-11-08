@@ -16,10 +16,10 @@ NOTEBOOKS = ROOT / "notebooks"
 REPORTS = ROOT / "reports"
 PIPELINES = {
     "final": {
-        "notebook": "reproducible_v2_pmc953_additions.ipynb",
-        "output": "submission_v2_pmc953_additions.csv",
+        "notebook": "reproducible_clean_et_log.ipynb",
+        "output": "submission_clean_et_log.csv",
         "report": "final_reproduction.json",
-        "official": 197909.42299,
+        "official": 211415.38617,
         "standalone": True,
         "external": False,
     },
@@ -143,11 +143,11 @@ report = {
     "local_reconstructed_mse": local_mse,
     "local_reconstructed_mae": local_mae,
     "local_reference_warning": "Diagnostic only; not an independent Kaggle score",
-    "own_lightgbm_models_retrained": True,
+    "own_models_retrained": True,
     "external_pretrained_component": config["external"],
     "public_pretrained_predictions_loaded": config["external"],
     "standalone_from_original_data": config["standalone"],
-    "public_sar_are_heuristic_priors_not_measured_labels": True,
+    "literature_postprocessing_used": False,
     "loaded_submission_sources": loaded_submissions,
     "loaded_oof_sources": loaded_oof,
     "test_targets_used_for_fit_or_selection": False,
