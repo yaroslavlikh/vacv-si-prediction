@@ -1,0 +1,103 @@
+{
+  "model": "DeepChem/ChemBERTa-77M-MTR frozen embeddings + LightGBM",
+  "target": "log1p(SI)",
+  "sample_weight": "1+SI/100",
+  "seeds": [
+    42,
+    13,
+    79
+  ],
+  "folds": 5,
+  "test_targets_used_for_fit_or_selection": false,
+  "external_pretraining": "77M PubChem structures; no task labels",
+  "summary": [
+    {
+      "protocol": "canonical",
+      "features": "cls",
+      "mse_mean": 4301453.221136004,
+      "mse_std": 26783.36245629241,
+      "mse_no_max_mean": 243345.73749768073,
+      "mse_no_max_std": 26392.560744082264,
+      "mse_no_top7_mean": 44518.05287755855,
+      "mae_mean": 228.65337766420248,
+      "max_target_pred_mean": 27.275550224326253
+    },
+    {
+      "protocol": "canonical",
+      "features": "cls_mean",
+      "mse_mean": 4297564.513972275,
+      "mse_std": 17492.56016336826,
+      "mse_no_max_mean": 238847.12959792255,
+      "mse_no_max_std": 17500.135615229872,
+      "mse_no_top7_mean": 39722.70499065776,
+      "mae_mean": 228.18591692284488,
+      "max_target_pred_mean": 24.63036565055638
+    },
+    {
+      "protocol": "canonical",
+      "features": "fp_mean",
+      "mse_mean": 4300429.074677512,
+      "mse_std": 14791.850749645662,
+      "mse_no_max_mean": 244278.00311295615,
+      "mse_no_max_std": 14269.806356917363,
+      "mse_no_top7_mean": 45053.34735079345,
+      "mae_mean": 228.34127614516277,
+      "max_target_pred_mean": 35.949324282825316
+    },
+    {
+      "protocol": "canonical",
+      "features": "mean",
+      "mse_mean": 4328755.557069842,
+      "mse_std": 48096.53219391496,
+      "mse_no_max_mean": 269062.42314196745,
+      "mse_no_max_std": 49414.45259775577,
+      "mse_no_top7_mean": 69872.98527895704,
+      "mae_mean": 232.36234394084627,
+      "max_target_pred_mean": 19.880123524303773
+    },
+    {
+      "protocol": "scaffold",
+      "features": "cls",
+      "mse_mean": 4295167.171748585,
+      "mse_std": 4003.9048409136108,
+      "mse_no_max_mean": 236984.43174072445,
+      "mse_no_max_std": 4488.646719128896,
+      "mse_no_top7_mean": 23812.879694285337,
+      "mae_mean": 219.57425419152665,
+      "max_target_pred_mean": 27.02993340158764
+    },
+    {
+      "protocol": "scaffold",
+      "features": "cls_mean",
+      "mse_mean": 4290904.562005837,
+      "mse_std": 2051.805534414161,
+      "mse_no_max_mean": 233462.77552744513,
+      "mse_no_max_std": 687.8101393442994,
+      "mse_no_top7_mean": 19847.414188562918,
+      "mae_mean": 215.23418578581254,
+      "max_target_pred_mean": 30.36920624526338
+    },
+    {
+      "protocol": "scaffold",
+      "features": "fp_mean",
+      "mse_mean": 4286505.427946103,
+      "mse_std": 2239.2769218064996,
+      "mse_no_max_mean": 232611.44562569735,
+      "mse_no_max_std": 946.1503335957742,
+      "mse_no_top7_mean": 18929.634357929808,
+      "mae_mean": 214.2276993716755,
+      "max_target_pred_mean": 46.137254231484725
+    },
+    {
+      "protocol": "scaffold",
+      "features": "mean",
+      "mse_mean": 4290609.494497069,
+      "mse_std": 1582.4428016422196,
+      "mse_no_max_mean": 233798.05908221912,
+      "mse_no_max_std": 654.9321485494013,
+      "mse_no_top7_mean": 19609.614395552904,
+      "mae_mean": 216.10619807313026,
+      "max_target_pred_mean": 33.16264785010116
+    }
+  ]
+}

@@ -1,0 +1,152 @@
+{
+  "model": "separate LightGBM log(IC50) and log(CC50), SI=exp(logCC50-logIC50)",
+  "seeds": [
+    42,
+    13,
+    79
+  ],
+  "folds": 5,
+  "external_structures": {
+    "none": 0,
+    "chembl": 1648,
+    "pubchem": 2188,
+    "both": 3836
+  },
+  "missing_train_IC50": "10000 uM per corrected organizer convention",
+  "validation_structure_exclusion": "InChIKey14; scaffold protocol also excludes validation scaffolds from external data",
+  "test_targets_used_for_fit_or_selection": false,
+  "summary": [
+    {
+      "protocol": "canonical",
+      "model": "both_w0.1",
+      "mse_mean": 4146045.9474938507,
+      "mse_std": 29261.42638620706,
+      "mse_no_max_mean": 111269.51849347922,
+      "mse_no_max_std": 12505.914975584938,
+      "mse_no_top7_mean": 22926.905041365095,
+      "mae_mean": 198.45932302139724,
+      "max_target_pred_mean": 132.94256188183226
+    },
+    {
+      "protocol": "canonical",
+      "model": "both_w0.5",
+      "mse_mean": 4167572.6334012686,
+      "mse_std": 22791.710367286207,
+      "mse_no_max_mean": 128354.95337150428,
+      "mse_no_max_std": 8739.37077446569,
+      "mse_no_top7_mean": 27698.486955947683,
+      "mae_mean": 208.16646695044278,
+      "max_target_pred_mean": 112.87589831436294
+    },
+    {
+      "protocol": "canonical",
+      "model": "chembl_w0.1",
+      "mse_mean": 4135147.7717074524,
+      "mse_std": 47018.14526948926,
+      "mse_no_max_mean": 115863.60153914969,
+      "mse_no_max_std": 18727.79066131045,
+      "mse_no_top7_mean": 35560.92907058188,
+      "mae_mean": 205.90841282523706,
+      "max_target_pred_mean": 202.0436844533576
+    },
+    {
+      "protocol": "canonical",
+      "model": "chembl_w0.5",
+      "mse_mean": 4320628.348409824,
+      "mse_std": 21064.298568825365,
+      "mse_no_max_mean": 297937.8897023573,
+      "mse_no_max_std": 34425.43441810422,
+      "mse_no_top7_mean": 198128.06660413742,
+      "mae_mean": 258.4513898318815,
+      "max_target_pred_mean": 184.17368857276244
+    },
+    {
+      "protocol": "canonical",
+      "model": "none_w0",
+      "mse_mean": 4178748.912733196,
+      "mse_std": 30917.347709957547,
+      "mse_no_max_mean": 148611.62365036624,
+      "mse_no_max_std": 15944.832551790929,
+      "mse_no_top7_mean": 42309.73442043131,
+      "mae_mean": 217.52874261107368,
+      "max_target_pred_mean": 153.03317732913357
+    },
+    {
+      "protocol": "canonical",
+      "model": "pubchem_w0.1",
+      "mse_mean": 4174809.42889295,
+      "mse_std": 28815.09556375022,
+      "mse_no_max_mean": 137822.6066153377,
+      "mse_no_max_std": 19525.662001359167,
+      "mse_no_top7_mean": 36620.70782896784,
+      "mae_mean": 208.45877416019403,
+      "max_target_pred_mean": 122.66292654390014
+    },
+    {
+      "protocol": "scaffold",
+      "model": "both_w0.1",
+      "mse_mean": 4292834.579170684,
+      "mse_std": 2040.7559693030064,
+      "mse_no_max_mean": 232104.17479821402,
+      "mse_no_max_std": 1504.5128029522784,
+      "mse_no_top7_mean": 19380.297082862402,
+      "mae_mean": 212.73610713243806,
+      "max_target_pred_mean": 15.789710253679814
+    },
+    {
+      "protocol": "scaffold",
+      "model": "both_w0.5",
+      "mse_mean": 4293504.865068258,
+      "mse_std": 2632.8362337814206,
+      "mse_no_max_mean": 233208.02516361256,
+      "mse_no_max_std": 371.9741475255492,
+      "mse_no_top7_mean": 19687.48046375553,
+      "mae_mean": 213.9710984983473,
+      "max_target_pred_mean": 17.698569223512205
+    },
+    {
+      "protocol": "scaffold",
+      "model": "chembl_w0.1",
+      "mse_mean": 4282972.446051461,
+      "mse_std": 9440.205092825416,
+      "mse_no_max_mean": 229939.64839086565,
+      "mse_no_max_std": 2432.793542525062,
+      "mse_no_top7_mean": 20350.1785359518,
+      "mae_mean": 216.99498388969377,
+      "max_target_pred_mean": 50.00765851402932
+    },
+    {
+      "protocol": "scaffold",
+      "model": "chembl_w0.5",
+      "mse_mean": 4332409.845946186,
+      "mse_std": 37164.80046904369,
+      "mse_no_max_mean": 290434.56002009247,
+      "mse_no_max_std": 17553.357200895647,
+      "mse_no_top7_mean": 84655.92360552227,
+      "mae_mean": 240.4770473739841,
+      "max_target_pred_mean": 98.39868388246845
+    },
+    {
+      "protocol": "scaffold",
+      "model": "none_w0",
+      "mse_mean": 4263545.425655058,
+      "mse_std": 53142.02967802176,
+      "mse_no_max_mean": 230224.08073210367,
+      "mse_no_max_std": 16607.52316673042,
+      "mse_no_top7_mean": 26737.988328304156,
+      "mae_mean": 217.57667536124163,
+      "max_target_pred_mean": 137.93779852401693
+    },
+    {
+      "protocol": "scaffold",
+      "model": "pubchem_w0.1",
+      "mse_mean": 4295234.140319749,
+      "mse_std": 1977.1072165152293,
+      "mse_no_max_mean": 233451.04254195877,
+      "mse_no_max_std": 599.5337849035783,
+      "mse_no_top7_mean": 19416.183322436722,
+      "mae_mean": 212.21039805076512,
+      "max_target_pred_mean": 11.098646246700596
+    }
+  ]
+}

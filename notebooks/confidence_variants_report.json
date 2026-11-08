@@ -1,0 +1,37 @@
+{
+  "g1": {
+    "mse": 80775.52490893673,
+    "mse_no_max": 80911.05431314635,
+    "mse_no_top7": 25673.660500863534,
+    "mae": 39.953658973588446,
+    "file": "submission_confidence_g1.csv"
+  },
+  "g2": {
+    "mse": 80889.37286145141,
+    "mse_no_max": 81025.0932857156,
+    "mse_no_top7": 25788.859191797903,
+    "mae": 39.951487853519914,
+    "file": "submission_confidence_g2.csv"
+  },
+  "g4": {
+    "mse": 81162.64273801188,
+    "mse_no_max": 81298.82166878037,
+    "mse_no_top7": 26065.37125333453,
+    "mae": 40.04474672274467,
+    "file": "submission_confidence_g4.csv"
+  },
+  "blend_g1_g2": {
+    "mse": 80823.17991895198,
+    "mse_no_max": 80958.7892812321,
+    "mse_no_top7": 25721.880909302712,
+    "mae": 39.94320855509237,
+    "file": "submission_confidence_blend_g1_g2.csv"
+  },
+  "blend_g2_g4": {
+    "mse": 81009.44351183502,
+    "mse_no_max": 81145.36539692199,
+    "mse_no_top7": 25910.354409219948,
+    "mae": 39.993346446584425,
+    "file": "submission_confidence_blend_g2_g4.csv"
+  }
+}

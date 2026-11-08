@@ -1,0 +1,24 @@
+{
+  "current_mse": 85461.37922973427,
+  "blockers": [
+    {
+      "title": "Adefovir dipivoxil",
+      "index": 148,
+      "true_reconstructed": 6578.9473684210525,
+      "pred": 827.8145695364238,
+      "squared_error": 33075528.470406543,
+      "mse_contribution": 55402.89526031247
+    },
+    {
+      "title": "sid103210702",
+      "index": 413,
+      "true_reconstructed": 2500.0157407407405,
+      "pred": 3.657995292366126,
+      "squared_error": 6231801.99326009,
+      "mse_contribution": 10438.5293019432
+    }
+  ],
+  "sum_two_mse_contributions": 65841.42456225568,
+  "mse_if_all_other_rows_perfect": 85461.37922973427,
+  "conclusion": "Target <50000 requires a legitimate new value or a materially different prediction for at least one blocker; all other rows alone cannot suffice."
+}

@@ -1,0 +1,45 @@
+{
+  "file": "/Users/yaroslavlikh/Desktop/it-hub/vacv-si-prediction/data/public_si_database.csv",
+  "rows": 2198,
+  "columns": [
+    "SMILES",
+    "IC50",
+    "CC50",
+    "SI",
+    "DOI",
+    "source",
+    "cc50_bound",
+    "InChIKey"
+  ],
+  "missing_required_values": {
+    "SMILES": 0,
+    "IC50": 0,
+    "CC50": 0,
+    "SI": 0
+  },
+  "invalid_smiles": 0,
+  "nonpositive_ic50": 0,
+  "nonpositive_cc50": 0,
+  "negative_si": 0,
+  "formula_errors_over_1e-6": 0,
+  "duplicate_full_inchikey_rows": 1219,
+  "missing_doi": 205,
+  "source_counts": {
+    "ChEMBL exact pair": 1812,
+    "ChEMBL": 162,
+    "PubChem_retrieval": 154,
+    "PubChem_lit": 50,
+    "paper_PMC9865139": 10,
+    "Wiley 7a-as-520": 1,
+    "Wiley 7d-as-522": 1,
+    "Wiley 7e-as-515": 1,
+    "Wiley 7h-as-517": 1,
+    "Wiley 7k-as-528": 1,
+    "Wiley 7l-as-529": 1,
+    "Wiley 8b-as-556": 1,
+    "Wiley 8c-as-536": 1,
+    "PMC3185742 4-thio-5-fluoro-cytidine": 1,
+    "PubChem AID156533/AID156532": 1
+  },
+  "status": "PASS"
+}

@@ -1,0 +1,25 @@
+{
+  "input_labeled_rows": 985,
+  "accepted_unique_structures": 375,
+  "accepted_test_structures": 163,
+  "accepted_by_source": {
+    "ChEMBL": 162,
+    "PubChem_retrieval": 154,
+    "PubChem_lit": 50,
+    "paper_PMC9865139": 9
+  },
+  "excluded": {
+    "unlabeled": 1334,
+    "invalid_smiles": 0,
+    "ncgc_unverified": 605,
+    "other_source": 0,
+    "chembl_over_10000": 4
+  },
+  "rules": [
+    "Exclude PubChem_NCGC_screen: no DOI and no independent train/verified label validation",
+    "Use CC50/EC50 instead of rounded SI column",
+    "Exclude ChEMBL SI>10000 as high-leverage assay outliers",
+    "Aggregate full InChIKey by median; verified manual and original train labels take priority later"
+  ],
+  "training_started_by_this_script": false
+}

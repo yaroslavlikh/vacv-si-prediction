@@ -1,0 +1,22 @@
+{
+  "label_version": "missing IC50 -> SI=0 (corrected convention)",
+  "train_rows": 320,
+  "test_rows": 597,
+  "n_lgbm_models": 30,
+  "scale": 2.4,
+  "cap": 4000,
+  "oof_mse": 4169967.3673364343,
+  "oof_without_global_max": 136910.66358284565,
+  "local_reconstructed_mse": 81312.2023976339,
+  "local_reconstructed_mae": 58.079847249540805,
+  "independent_evaluation": false,
+  "official_kaggle_score_unknown": true,
+  "test_concentrations_used_for_prediction": false,
+  "public_literature_rows": 34,
+  "wiley_rows": 8,
+  "wiley_doi": "10.1002/cmdc.202100771",
+  "pubchem_verified_rows": 7,
+  "lower_bounds_used_conservatively": true,
+  "remaining_public_rows": 5,
+  "submission": "submission_public_hybrid_v2.csv"
+}

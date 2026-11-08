@@ -1,0 +1,25 @@
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+
+# Private competition inputs
+data/molecular_activity/train.csv
+data/molecular_activity/test.csv
+
+# Generated predictions, OOF arrays and model artifacts
+submission*.csv
+external_training_labels.csv
+*.npz
+*.npy
+*.joblib
+*.pkl
+
+# Executed notebooks and local logs
+notebooks/executed_*.ipynb
+*.log
+
+# Temporary caches
+analog_cache/
+pubchem_cache/
+.pytest_cache/

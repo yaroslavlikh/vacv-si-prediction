@@ -1,0 +1,22 @@
+{
+  "selected_by": "mean percentile rank of repeated OOF full/no-max/no-top7 MSE",
+  "protocol": "canonical",
+  "model": "k5_g4_log",
+  "base_weight": 0.75,
+  "oof": {
+    "mse": 4143131.328962451,
+    "mse_no_max": 112986.65448021151,
+    "mse_no_top7": 61833.692629089404,
+    "mae": 222.30517591233465
+  },
+  "local_reconstructed_diagnostic": {
+    "mse": 111988.15964074872,
+    "mse_no_max": 112176.05923746139,
+    "mse_no_top7": 46403.92417786004,
+    "mae": 67.68894242553039
+  },
+  "test_targets_used_for_fit_or_selection": false,
+  "manual_post_hoc_replacements": false,
+  "independent_evaluation": false,
+  "submission": "submission_clean_soft_knn.csv"
+}

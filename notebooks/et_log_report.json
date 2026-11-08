@@ -1,0 +1,16 @@
+{
+  "model": "ExtraTrees log1p(SI), 60 trees per model, 2 protocols x 3 seeds + supervised exact neighbor",
+  "oof_summary": "canonical no-max=73927.60, no-top7=25791.78; scaffold no-max=227290.91, no-top7=20001.97",
+  "exact_neighbor_rows": 252,
+  "manual_post_hoc_replacements": false,
+  "local_reconstructed_diagnostic": {
+    "mse": 80742.9215472001,
+    "mse_no_max": 80878.39624778264,
+    "mse_no_top7": 25640.670319580884,
+    "mae": 40.40083979331594
+  },
+  "independent_evaluation": false,
+  "official_kaggle_score_unknown": true,
+  "test_concentrations_used_for_prediction": false,
+  "submission": "submission_clean_et_log.csv"
+}
