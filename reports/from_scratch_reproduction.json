@@ -1,0 +1,42 @@
+{
+  "status": "PASS",
+  "issues": [],
+  "pipeline": "from_scratch",
+  "notebook": "reproducible_bsc40_public_sar_direct.ipynb",
+  "executed_notebook": "executed_from_scratch.ipynb",
+  "code_cells": 10,
+  "errors": 0,
+  "execution_complete": true,
+  "seconds": 9.608646869659424,
+  "rows": 597,
+  "columns": [
+    "index",
+    "SI VACV"
+  ],
+  "all_finite": true,
+  "all_nonnegative": true,
+  "official_kaggle_mse_user_reported": 82826.34914,
+  "local_reconstructed_mse": 45095.15857653556,
+  "local_reconstructed_mae": 55.26998627217832,
+  "local_reference_warning": "Diagnostic only; not an independent Kaggle score",
+  "own_lightgbm_models_retrained": true,
+  "external_pretrained_component": false,
+  "public_pretrained_predictions_loaded": false,
+  "standalone_from_original_data": true,
+  "public_sar_are_heuristic_priors_not_measured_labels": true,
+  "loaded_submission_sources": [],
+  "loaded_oof_sources": [],
+  "test_targets_used_for_fit_or_selection": false,
+  "independent_evaluation": false,
+  "reproduced_sha256": "6f7c6cdc0b2d75ce18e806ef6468382631647356a849d1d0a22ef06f37a3ad8d",
+  "comparison": {
+    "reference_provided": true,
+    "reference_file": "submission_bsc40_public_sar_direct.csv",
+    "reference_sha256": "b47ae834410527e76df6c33cc3e332e89fc5c4c62a04b7de585a2a8cea4855d7",
+    "reproduced_sha256": "6f7c6cdc0b2d75ce18e806ef6468382631647356a849d1d0a22ef06f37a3ad8d",
+    "byte_identical": false,
+    "max_absolute_difference": 1.1368683772161603e-13,
+    "tolerance": 1e-08,
+    "numerically_verified": true
+  }
+}

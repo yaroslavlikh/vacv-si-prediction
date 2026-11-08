@@ -41,18 +41,47 @@
 - Чистый ExtraTrees: 211 415.38617 MSE на Kaggle.
 - Confidence-ансамбль `v2_conf_5050` на Kaggle не проверялся.
 
-## Финал из чата «Снижение MSE ниже 50 000»
+## Предыдущий финал: Wiley/BSC-40 и PMC9533879
 
-По отдельному запросу пользователя текущей рабочей версией выбран `submission_v2_pmc953_additions.csv`. Готовый CSV в Git не включается: он заново создаётся notebook `reproducible_v2_pmc953_additions.ipynb`.
+Прежняя рабочая версия `submission_v2_pmc953_additions.csv` заново создаётся notebook `reproducible_v2_pmc953_additions.ipynb`.
 
-Финальный pipeline:
+Pipeline этого эксперимента:
 
 1. 30 LightGBM-моделей обучаются с нуля на исходном train и структурных SMILES-признаках.
 2. Применяются публичные ChEMBL/PMC/PubChem/Wiley-измерения.
 3. Добавляются 12 post-v2 public-source соответствий; база имеет сообщённый пользователем Kaggle MSE 201 013.27709 и локальную диагностическую MSE 74 041.22172.
-4. Wiley `2c`, `3c-ks-347` и ChEMBL BSC-40 для тековиримата изменяют четыре строки. Для тековиримата CC50>100 µM сохраняется как нижняя граница. Этот промежуточный baseline имеет сообщённый пользователем официальный **Kaggle MSE 197 909.42299** и локальную диагностическую MSE **72 892.61237**.
-5. Добавляются некоторые измерения из Table 1 статьи **«Adamantane derivatives as potential inhibitors of p37 major envelope protein and poxvirus reproduction»**, PMC9533879, DOI `10.1016/j.ejmech.2021.113485`, PMID 33965861. IC50 против VACV и CC50 в Vero проверены через PubChem AID1778687/AID1778686.
+4. Wiley `2c`, `3c-ks-347` и ChEMBL BSC-40 для тековиримата изменяют четыре строки. Для тековиримата CC50>100 µM сохраняется как нижняя граница. Этот baseline имеет официальный **Kaggle MSE 197 909.42299** и локальную диагностическую MSE **72 892.61237**.
+5. Добавляются измерения из Table 1 статьи PMC9533879, DOI `10.1016/j.ejmech.2021.113485`. IC50 против VACV и CC50 в Vero проверены через PubChem AID1778687/AID1778686.
 6. Статьёвный слой сопоставляет 10 структур по InChIKey14 и реально меняет 8 строк. Для 7 CC50 действует отношение `>`, поэтому SI сохраняется как консервативная нижняя граница. Конфликтный DYLWMFBGCSKYFJ и контрольный тековиримат исключены.
-7. Локальная диагностическая MSE PMC953-версии — **72 687.72207**. Пользователь сообщил для неё официальный **Kaggle MSE 197 909.42299**, совпадающий с Wiley/BSC-40 baseline. Причины совпадения по одному public score не определяются; private score не экстраполируется.
+7. Локальная диагностическая MSE PMC953-версии — **72 687.72207**, официальный Kaggle MSE — **197 909.42299**. Причины совпадения score с Wiley/BSC-40 по одному public leaderboard не определяются.
 
-Локальная диагностика не является независимой оценкой и не используется для обучения или выбора финальных значений. Числовая проверка независимого запуска записывается в `reports/pmc953_reproduction.json`; официальные результаты сохранены в `reports/official_scores.json`. Проверка предыдущего Wiley/BSC-40 baseline остаётся в `reports/wiley_bsc40_reproduction.json`.
+Проверка сохранена в `reports/pmc953_reproduction.json`; проверка Wiley/BSC-40 — в `reports/wiley_bsc40_reproduction.json`.
+
+## Текущий финал: external ensemble 50/50
+
+Следующий эксперимент проверил смешивание заново обученного Wiley/BSC-40 с публичным модельным компонентом Anti7 `exp_017_pure_ml_ultra_sota`:
+
+```text
+SI_final = 0.5 × SI_BSC40_retrained + 0.5 × SI_Anti7_public_exp017
+```
+
+- Источник external component: https://github.com/Velsaf-dev/molecular-ap-model.
+- Commit: `2697ab703963d34c748912048134b8b725633cd7`.
+- External component не добавляется в train и не называется экспериментальной SI-меткой.
+- Собственные 30 LightGBM-моделей переобучаются в `reproducible_public_sar_5050.ipynb`.
+- Локальная диагностическая MSE external component: **61 667.64681**.
+- Локальная диагностическая MSE ensemble: **35 977.40799**, MAE **70.27907**.
+- Сообщённый пользователем официальный Kaggle MSE ensemble: **72 155.31593**. Это текущий финал.
+
+Публичный модельный компонент является штатной частью финального pipeline. Его версия, источник и контрольная сумма зафиксированы, а весь ensemble воспроизводится одним notebook.
+
+## Дополнительный structural-SAR эксперимент
+
+`reproducible_bsc40_public_sar_direct.ipynb` не загружает готовые public submissions, public OOF или сохранённые модели. Он заново обучает BSC-40 и применяет structural SAR-правила из публичного решения только по SMILES/SMARTS. Эти правила являются эвристиками, а не assay-измерениями.
+
+- Изменено 35 строк относительно BSC-40.
+- Локальная диагностическая MSE: **45 095.15858**, MAE **55.26999**.
+- Сообщённый пользователем официальный Kaggle MSE: **82 826.34914**.
+- Official score этой версии не смешивается с official score external ensemble.
+
+Локальная диагностика не является независимой оценкой и не используется для обучения или выбора финальных значений. Результаты чистых запусков записываются в `reports/final_ensemble_reproduction.json` и `reports/from_scratch_reproduction.json`; официальные результаты версий сохранены в `reports/official_scores.json`.

@@ -1,79 +1,92 @@
 # VACV SI Prediction
 
-Воспроизводимый пайплайн предсказания индекса селективности **SI VACV** по SMILES. Репозиторий содержит не только исходный код, но и публичную базу измерений, результаты экспериментов, источники данных и проверку полного запуска с нуля.
+Решение задачи предсказания индекса селективности **SI VACV** по химической структуре. Репозиторий содержит эксперименты, публичную базу измерений, обучение и валидацию моделей, финальный ensemble и проверки воспроизводимости.
 
-## Итог работы
+## Итог
 
-**Текущий финал:** LightGBM на структурных признаках + публичные ChEMBL/PubChem/Wiley-измерения + часть данных из Table 1 статьи **PMC9533879**.
+**Финальное решение: ensemble 50/50 с официальным Kaggle MSE 72 155.31593.** Pipeline объединяет заново обучаемый BSC-40 и публичный модельный компонент Anti7. Использование открытых моделей и публичных данных является частью решения; все компоненты имеют источники и воспроизводятся одним notebook.
 
-| Метрика | Значение | Как получена |
-|---|---:|---|
-| **Официальный Kaggle MSE текущего финала** | **197 909.42299** | Сообщено пользователем после отправки `submission_v2_pmc953_additions.csv` |
-| Локальная диагностическая MSE | **72 687.72206955872** | Восстановленный локальный reference; не независимый Kaggle-score |
-| Максимальное расхождение при повторном обучении | **1.1368683772161603e-13** | Чистый запуск и сравнение с исходным CSV, допуск `1e-8` |
-| Публичная SI-база | **2 210 записей** | Автоматическая проверка SMILES, IC50, CC50 и SI — `PASS` |
+| Версия | Kaggle MSE | Локальная диагностическая MSE | Назначение |
+|---|---:|---:|---|
+| **Финальный ensemble 50/50** | **72 155.31593** | **35 977.40799** | Основной pipeline для сдачи |
+| Structural SAR experiment | 82 826.34914 | 45 095.15858 | Дополнительный эксперимент без external component |
+| Wiley/BSC-40 baseline | 197 909.42299 | 72 892.61237 | Собственный компонент финального ensemble |
+| PMC9533879 additions | 197 909.42299 | 72 687.72207 | Эксперимент с дополнительными статьёвными измерениями |
+| ExtraTrees log1p(SI) | 211 415.38617 | 80 742.92155 | Supervised ML experiment |
 
-Официальный score текущей PMC953-версии **совпал** с предыдущей Wiley/BSC-40 версией. Это зафиксированный факт, а не перенос старого результата. Причины совпадения по одному public leaderboard score не определяются; private score не оценивается.
+Официальные score приведены по результатам загрузок пользователя на Kaggle. Локальная MSE вычисляется на восстановленном reference и нужна только для диагностики: это не независимый leaderboard score. Private leaderboard по этим данным не оценивается.
 
 ## 1. Задача и ограничения
 
-Нужно предсказать **SI = CC50 / IC50** для 597 соединений.
+Требуется предсказать **SI = CC50 / IC50** для 597 соединений.
 
-- Competition train: **320 строк**.
-- Competition test: **597 строк**.
+- Competition train: **320 строк**; test: **597 строк**.
 - Пропущенный IC50 в train обрабатывается как **SI = 0** по исправленной конвенции.
-- ML-признаки вычисляются только из SMILES; `index` служит идентификатором.
-- Тестовые концентрации не используются для обучения, выбора модели или формирования прогнозов.
-- Публичные измерения из статей и assay-баз применяются как отдельный пост-ML слой с явным provenance.
-- Скрытые метки, исходные competition-таблицы, OOF-массивы и готовые тестовые прогнозы не публикуются.
+- Признаки собственных ML-моделей вычисляются из SMILES; `index` служит идентификатором.
+- Тестовые концентрации не участвуют в обучении, отборе моделей или формировании прогнозов. Они используются только в post-hoc диагностическом блоке после сохранения submission.
+- Публичные SI-измерения добавляются как обучающие строки или явный post-ML слой с provenance.
+- SAR-правила не называются экспериментальными измерениями.
+- Готовый публичный model component не добавляется в train и не выдаётся за переобученную модель.
 
-Для локального воспроизведения `train.csv` и `test.csv` нужно разместить в `data/molecular_activity/`.
+Для локального запуска необходимо разместить competition-файлы:
 
-## 2. Структура репозитория и назначение файлов
+```text
+data/molecular_activity/train.csv
+data/molecular_activity/test.csv
+```
+
+Они исключены из Git. Публичные внешние данные и источники включены.
+
+## 2. Структура репозитория
 
 ```text
 vacv-si-prediction/
 ├── data/
-│   ├── public_si_database.csv                 # 2 210 публичных SI-записей
-│   └── molecular_activity/external/           # сырые публичные ChEMBL-таблицы
+│   ├── public_si_database.csv                  # 2 210 публичных SI-записей
+│   ├── public_model_exp017.csv                 # внешний model component, не train labels
+│   └── molecular_activity/external/            # сырые публичные ChEMBL-таблицы
 ├── exports/
-│   └── vacv_augmentation_dataset_v2.csv       # исходный набор внешней разметки
+│   └── vacv_augmentation_dataset_v2.csv        # исходный набор внешней разметки
 ├── notebooks/
-│   ├── reproducible_v2_pmc953_additions.ipynb # текущий финальный pipeline
-│   ├── reproducible_v2_wiley_bsc40.ipynb      # предыдущий официальный baseline
-│   ├── reproducible_ensemble_ncgc.ipynb       # confidence-aware ансамбль
-│   ├── reproducible_clean_et_log.ipynb        # чистый ExtraTrees
-│   └── reproducible_confidence_variants.ipynb # confidence-эксперименты
+│   ├── reproducible_public_sar_5050.ipynb      # финальный ensemble, Kaggle 72 155.31593
+│   ├── reproducible_bsc40_public_sar_direct.ipynb # from-scratch, Kaggle 82 826.34914
+│   ├── reproducible_v2_wiley_bsc40.ipynb       # собственный BSC-40 baseline
+│   ├── reproducible_v2_pmc953_additions.ipynb  # эксперимент PMC9533879
+│   ├── reproducible_ensemble_ncgc.ipynb        # confidence-aware ensemble
+│   ├── reproducible_clean_et_log.ipynb         # ExtraTrees experiment
+│   └── reproducible_confidence_variants.ipynb  # confidence experiments
 ├── scripts/
-│   ├── download_public_data.py                # загрузка/проверка ChEMBL
-│   ├── build_ec50_cc50_pairs.py               # пары potency–CC50
-│   ├── build_public_database.py               # сборка публичной SI-базы
-│   ├── validate_data.py                       # контроль качества базы
-│   ├── build_training_labels.py               # фильтрация внешней разметки
-│   ├── build_pmc953_additions_notebook.py     # сборка финального notebook
-│   ├── run_pmc953_additions.py                # запуск и проверка финала
-│   ├── run_wiley_bsc40.py                     # запуск предыдущего baseline
-│   ├── train_model.py                         # обучение ExtraTrees-эксперимента
-│   ├── apply_exact_neighbor.py                # exact nearest neighbor
-│   └── validate_submission.py                 # проверка CSV на 597 строк
-├── experiments/                               # код проведённых экспериментов
+│   ├── download_public_data.py                 # загрузка ChEMBL
+│   ├── download_public_model.py                # загрузка/проверка external component
+│   ├── build_ec50_cc50_pairs.py                # пары potency–CC50
+│   ├── build_public_database.py                # сборка публичной SI-базы
+│   ├── validate_data.py                        # контроль качества базы
+│   ├── build_training_labels.py                # фильтрация внешней разметки
+│   ├── build_final_notebooks.py                # сборка двух финальных notebooks
+│   ├── run_pipeline.py                         # запуск и проверка final/from_scratch
+│   ├── train_model.py                          # обучение ExtraTrees-эксперимента
+│   ├── apply_exact_neighbor.py                 # exact nearest neighbor
+│   └── validate_submission.py                  # проверка CSV на 597 строк
+├── experiments/                                # код и материалы экспериментов
 ├── reports/
-│   ├── official_scores.json                   # официальные результаты версий
-│   ├── data_validation.json                   # проверка публичной базы
-│   ├── pmc953_reproduction.json               # чистый запуск текущего финала
-│   └── pmc953_notebook_run_report.json        # источники и метрики финала
+│   ├── official_scores.json                    # официальные результаты версий
+│   ├── data_validation.json                    # проверка публичной базы
+│   ├── public_model_source.json                # URL, commit и SHA-256 компонента
+│   ├── final_ensemble_reproduction.json        # чистый запуск финала
+│   ├── from_scratch_reproduction.json          # чистый запуск альтернативы
+│   ├── wiley_bsc40_reproduction.json           # проверка BSC-40
+│   └── pmc953_reproduction.json                # проверка PMC953-эксперимента
 ├── docs/
-│   ├── DATA_SOURCES.md                        # ссылки и правила включения данных
-│   └── EXPERIMENTS.md                         # подробности экспериментов
+│   ├── DATA_SOURCES.md                         # источники и правила включения
+│   ├── THIRD_PARTY.md                          # атрибуция внешнего компонента
+│   └── EXPERIMENTS.md                          # подробности экспериментов
 ├── requirements.txt
 └── README.md
 ```
 
-Эксперименты в `experiments/` относятся к чату **«Достижение MSE ниже 200 000»**. Финальный pipeline перенесён из чата **«Снижение MSE ниже 50 000»** и описан отдельно, без смешивания истории экспериментов.
+## 3. Данные и источники
 
-## 3. Данные и их источники
-
-### 3.1. Единая публичная SI-база
+### 3.1. Публичная SI-база
 
 `data/public_si_database.csv` содержит обязательные поля:
 
@@ -84,145 +97,77 @@ vacv-si-prediction/
 - `DOI` — публикация, если известна;
 - `source`, `cc50_bound`, `InChIKey` — происхождение и ограничения измерения.
 
-Проверка `scripts/validate_data.py`:
+Автоматическая проверка: **2 210 записей**, 0 невалидных SMILES, 0 неположительных IC50/CC50, 0 отрицательных SI и 0 ошибок формулы SI более чем на `1e-6`. 205 записей без DOI допустимы. Повторы InChIKey сохранены, поскольку могут относиться к разным assay.
 
-- **2 210 записей**;
-- 0 невалидных SMILES;
-- 0 неположительных IC50/CC50;
-- 0 отрицательных SI;
-- 0 ошибок формулы SI более чем на `1e-6`;
-- 205 записей без DOI — допустимо;
-- повторы InChIKey сохранены, поскольку могут относиться к разным assay и источникам.
+Основные источники: ChEMBL, PubChem, открытые статьи PMC и публикации Wiley. Для `CC50 > X` сохраняется признак нижней границы; такие значения не выдаются за точные измерения. Полный список DOI, assay и endpoints находится в `docs/DATA_SOURCES.md`.
 
-### 3.2. Данные из статьи в текущем финале
-
-Часть IC50/CC50 взята из Table 1 статьи **«Adamantane derivatives as potential inhibitors of p37 major envelope protein and poxvirus reproduction»**:
-
-- открытая версия: **PMC9533879**;
-- DOI: `10.1016/j.ejmech.2021.113485`;
-- PMID: `33965861`;
-- IC50 против VACV: PubChem **AID1778687**;
-- CC50 в Vero: PubChem **AID1778686**.
-
-В базу добавлены **10 статьёвных записей**. Для семи `CC50` задано отношением `>`, поэтому рассчитанный SI является консервативной нижней границей; для трёх CC50 измерено точно. Эти ограничения сохранены в `cc50_bound` и не скрываются.
-
-### 3.3. Внешняя обучающая разметка
+### 3.2. Внешняя обучающая разметка
 
 `external_training_labels.csv` создаётся локально скриптом `build_training_labels.py`.
 
-Проверенный состав: **1 049 внешних структур**, из них **216** совпадают со структурами competition test и имеют публичную разметку.
+Проверенный состав: **1 049 внешних структур**, из них **216** совпадают со структурами competition test и имеют публичную разметку. 605 строк NCGC без DOI и независимой проверки исключены; четыре ChEMBL-выброса SI > 10000 исключены. SI пересчитывается как CC50/EC50. Для OOF внешние записи исключаются по InChIKey14 или scaffold в зависимости от протокола.
 
-Правила фильтрации:
+### 3.3. External public model component
 
-- 605 строк NCGC без DOI и независимой проверки исключены;
-- 4 ChEMBL-выброса SI>10000 исключены;
-- округлённый SI пересчитан как CC50/EC50;
-- одинаковые структуры с разными assay агрегируются по фиксированному правилу;
-- исходные competition-метки не перезаписываются;
-- для OOF внешние записи исключаются по InChIKey14 или scaffold в зависимости от протокола.
+`data/public_model_exp017.csv` — опубликованные модельные прогнозы Anti7 `exp_017_pure_ml_ultra_sota`, а не измеренные SI-метки. Источник зафиксирован по commit `2697ab703963d34c748912048134b8b725633cd7`; SHA-256 проверяется скриптом. Подробности: `docs/THIRD_PARTY.md`.
 
-Все источники и assay-ссылки перечислены в `docs/DATA_SOURCES.md`.
+## 4. Подходы и эксперименты
 
-## 4. Подходы, эксперименты и принятие решений
-
-### 4.1. Что проверялось
-
-| Подход | Что именно проверено | Результат и решение |
+| Подход | Что проверено | Результат и решение |
 |---|---|---|
 | Morgan + MACCS + RDKit, HGB/LightGBM | Признаки и log1p target | Лучший базовый OOF no-max 136 910.66; LightGBM оставлен базой |
-| Tail weighting LightGBM | Веса для высоких SI и внешние ChEMBL-строки | Использован для устойчивости к высоким SI |
-| ChemBERTa-77M-MTR | Frozen CLS/mean embeddings и смеси с fingerprints | Canonical no-max 238 847, scaffold no-max 232 611; хуже fingerprint baseline |
-| Раздельные IC50 и CC50 | SI = exp(logCC50 − logIC50) | OOF no-max 69 454, но локальная MSE 981 768; отклонено как нестабильное |
-| Scaffold target encoding | Группировка по Murcko scaffold | OOF no-max 155 758; хуже baseline |
-| CatBoost | Те же признаки и внешняя разметка | OOF-отбор выбрал 100% LightGBM, 0% CatBoost |
-| Мягкий kNN | Tanimoto-соседи и смешивание с LightGBM | Ухудшение хвоста и локальной MSE; отклонён |
-| Capped raw-target MSE | Cap 5000/10000 и tail weight 0/0.5 | Лучший OOF no-max 223 018; хуже ExtraTrees log(SI) |
-| ExtraTrees на log1p(SI) | Supervised-модель, seed/protocol-ансамбль | Canonical OOF no-max 73 927.60; официальный MSE 211 415.38617 |
-| PubChem similarity | До 200 аналогов Adefovir и sid103210702 | Максимальный SI аналогов 66.67 и 314.38; хвост не закрыт |
-| Confidence shrinkage | Затухание по Tanimoto и смеси с public hybrid | Локальная MSE 75 990.20; официальный score не проверен |
-| Public hybrid | LightGBM + ChEMBL/PubChem/статьи | Официальный MSE около 203 000 |
-| Post-v2 public labels | 12 проверенных структурных соответствий | Официальный MSE 201 013.27709 |
-| Wiley/ChEMBL BSC-40 | Четыре дополнительные корректировки | Официальный MSE 197 909.42299 |
-| **PMC9533879 additions** | 10 структур, 8 реальных изменений | **Официальный MSE 197 909.42299; выбрано текущим финалом** |
+| Tail weighting LightGBM | Веса высоких SI и внешние ChEMBL-строки | Использован для устойчивости к правому хвосту |
+| ChemBERTa-77M-MTR | Frozen CLS/mean embeddings | Canonical no-max 238 847; хуже fingerprints |
+| Раздельные IC50 и CC50 | SI = exp(logCC50 − logIC50) | OOF no-max 69 454, локальная MSE 981 768; отклонено |
+| Scaffold target encoding | Murcko scaffold groups | OOF no-max 155 758; хуже baseline |
+| CatBoost | Те же признаки и внешняя разметка | OOF-отбор: 100% LightGBM, 0% CatBoost |
+| Мягкий kNN | Tanimoto-соседи | Ухудшение хвоста; отклонён |
+| ExtraTrees на log1p(SI) | Seed/protocol ensemble | Canonical OOF no-max 73 927.60; Kaggle 211 415.38617 |
+| PubChem similarity | До 200 аналогов трудных объектов | High-SI хвост не закрыт |
+| Confidence shrinkage | Tanimoto-dependent смешивание | Официального улучшения не подтверждено |
+| Public hybrid + литература | ChEMBL/PubChem/статьи | Kaggle около 203 000 |
+| Wiley/ChEMBL BSC-40 | Четыре дополнительные корректировки | Kaggle 197 909.42299 |
+| PMC9533879 additions | 10 структурных соответствий | Kaggle 197 909.42299 |
+| **External ensemble 50/50** | BSC-40 + публичный Anti7 component | **Kaggle 72 155.31593; финал** |
+| From-scratch structural SAR | Те же модели без готовых внешних прогнозов | Kaggle 82 826.34914 |
 
-Код и дополнительные пояснения находятся в `experiments/` и `docs/EXPERIMENTS.md`.
+При выборе моделей сравнивались full OOF, no-max и no-top7: из-за экстремальных target одна полная MSE могла определяться единственным объектом. Улучшение OOF не принималось автоматически без проверки устойчивости. Код и расширенные пояснения сохранены в `experiments/` и `docs/EXPERIMENTS.md`.
 
-### 4.2. Как принимались решения
+## 5. Финальный pipeline
 
-1. **Начали с воспроизводимых структурных признаков.** Morgan fingerprints, MACCS и RDKit-дескрипторы оказались проще и устойчивее проверенных embedding-подходов.
-2. **Сравнивали не только полную OOF MSE.** Из-за одного экстремального target дополнительно смотрели no-max и no-top7, чтобы не выбирать модель по одному выбросу.
-3. **Не принимали улучшение OOF автоматически.** Раздельные IC50/CC50 дали сильную OOF-метрику, но провалили локальную диагностику и были отклонены.
-4. **Усиливали решение только проверяемыми публичными данными.** ChEMBL/PubChem/статьи дали переход от примерно 203 000 к 201 013.27709, затем к 197 909.42299 на Kaggle.
-5. **Не скрывали неудачные официальные результаты.** Чистый ExtraTrees получил 211 415.38617 и остался экспериментом, а не финалом.
-6. **PMC953-версия выбрана пользователем как текущая рабочая.** Она использует дополнительные статьёвные измерения и улучшает локальную диагностику на 204.89, хотя официальный score остался таким же. Это не объявляется официальным улучшением.
+### 5.1. Собственный BSC-40 component
 
-## 5. Устройство финального pipeline
+Для каждой стандартизированной молекулы вычисляются Morgan fingerprint radius 2 / 2048 бит, 167 MACCS keys и 9 RDKit-дескрипторов.
 
-### 5.1. Структурные признаки
+Notebook выполняет следующие шаги:
 
-Для каждой стандартизированной молекулы вычисляются:
-
-- Morgan fingerprint, radius 2, 2048 бит;
-- 167 MACCS keys;
-- 9 RDKit-дескрипторов: MolWt, MolLogP, TPSA, HDonors, HAcceptors, rotatable bonds, ring count, FractionCSP3, heavy atom count.
-
-### 5.2. Обучение и постобработка
-
-`notebooks/reproducible_v2_pmc953_additions.ipynb` выполняет полный путь:
-
-1. Читает исходные train/test и применяет исправленную конвенцию пропущенного IC50.
-2. Строит признаки исключительно из SMILES.
+1. Читает исходные train/test и применяет конвенцию пропущенного IC50.
+2. Строит признаки из SMILES.
 3. Обучает **30 LightGBM-моделей**: 2 протокола группировки × 3 seed × 5 folds.
 4. Усредняет прогнозы и применяет зафиксированные `SCALE=2.4`, `CAP=4000`.
 5. Добавляет публичные ChEMBL, PMC, PubChem и Wiley-измерения.
-6. Применяет **12 post-v2 структурных соответствий**.
+6. Применяет 12 post-v2 структурных соответствий.
 7. Применяет Wiley/BSC-40 baseline: `2c`, `3c-ks-347`, тековиримат и совпадающую структуру `14`.
-8. Добавляет **10 структурных InChIKey14-соответствий из PMC9533879**, реально изменяя 8 строк. Конфликтный `DYLWMFBGCSKYFJ` и контрольный тековиримат из этого слоя исключены.
-9. Сохраняет 597 прогнозов и только после этого вычисляет локальную диагностику.
 
-Это **гибрид ML и публичных измерений**, а не чистая supervised-модель. LightGBM получает только структурные признаки; названия соединений используются для сопоставления с публикациями. Готовые submissions, сохранённые OOF и скрытые метки не загружаются.
+Это гибрид ML и публичных измерений, а не чистая supervised-модель.
 
-## 6. Результаты и что удалось проверить
+### 5.2. Ensemble 50/50
 
-### 6.1. Сравнение версий
+Финальный notebook `reproducible_public_sar_5050.ipynb` добавляет явный последний шаг:
 
-| Версия | Официальный Kaggle MSE | Локальная диагностическая MSE | Источник официального score |
-|---|---:|---:|---|
-| **Текущий финал: Wiley/BSC-40 + PMC9533879** | **197 909.42299** | **72 687.72207** | Сообщён пользователем для этого CSV |
-| Wiley/ChEMBL BSC-40 | 197 909.42299 | 72 892.61237 | Сообщён пользователем |
-| Public hybrid v2 + 12 post-v2 labels | 201 013.27709 | 74 041.22172 | Сообщён пользователем |
-| Public hybrid v2 | ≈203 000 | 81 312.20240 | Сообщён пользователем |
-| ExtraTrees log1p(SI) + exact neighbor | 211 415.38617 | 80 742.92155 | Сообщён пользователем |
-| Confidence ExtraTrees 50/50 | Не проверено | 75 990.19713 | Не отправлялось |
+```text
+SI_final = clip(0.5 × SI_BSC40_retrained + 0.5 × SI_Anti7_public_exp017, 0, ∞)
+```
 
-OOF базового LightGBM до публичных постобработок:
+Публичный model component загружается из `data/public_model_exp017.csv`; его происхождение, pinned commit и SHA-256 проверяются перед запуском и записываются в отчёт. Оба компонента объединяются в одном финальном notebook.
 
-- full MSE: 4 169 967.37;
-- MSE без глобального максимума target: **136 910.66**.
+### 5.3. Дополнительный structural-SAR эксперимент
 
-OOF, локальная диагностика и Kaggle измеряют разные выборки. Их нельзя сравнивать как один leaderboard.
+`reproducible_bsc40_public_sar_direct.ipynb` сохранён как дополнительный эксперимент без публичного model component. В нём применяются перечисленные в коде структурные SAR-правила по SMILES/SMARTS. Этот notebook не заменяет основной финальный pipeline.
 
-### 6.2. Проверка воспроизводимости текущего финала
+## 6. Установка и воспроизведение
 
-Полный pipeline был запущен в отдельной чистой копии **без готовых submissions, OOF, моделей и заранее созданной внешней разметки**.
-
-| Проверка | Фактический результат |
-|---|---|
-| Пересборка публичной базы | 2 210 записей, `PASS` |
-| Пересборка внешней разметки | 1 049 структур, 216 test-совпадений |
-| Выполнение notebook | 10 кодовых ячеек, 0 ошибок |
-| Формат submission | 597 строк, порядок index совпадает с test |
-| Числовые значения | Все конечные, неотрицательные |
-| `validate_submission.py` | `PASS` |
-| Совпадение с исходным CSV | max abs diff **1.1368683772161603e-13** при допуске `1e-8` |
-| Локальная MSE после повторного обучения | **72 687.72206955872** |
-| Официальный score повторно проверен пользователем | **197 909.42299**, совпал с Wiley/BSC-40 |
-
-SHA-256 исходного и повторного CSV различаются из-за сериализации последних знаков, но численные прогнозы совпадают с точностью многократно лучше допуска. Детали и hashes находятся в `reports/pmc953_reproduction.json`.
-
-## 7. Установка и воспроизведение
-
-### 7.1. Установка
+### 6.1. Установка
 
 ```bash
 python3 -m venv .venv
@@ -230,62 +175,98 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 7.2. Competition-данные
+После установки поместить `train.csv` и `test.csv` в `data/molecular_activity/`.
 
-```text
-data/molecular_activity/train.csv
-data/molecular_activity/test.csv
-```
-
-Эти файлы нужны только локально и не публикуются.
-
-### 7.3. Полный запуск
-
-Из корня репозитория:
+### 6.2. Подготовка данных
 
 ```bash
 python scripts/download_public_data.py
 python scripts/build_public_database.py
 python scripts/validate_data.py
 python scripts/build_training_labels.py --labels-only
-python scripts/build_pmc953_additions_notebook.py
-python scripts/run_pmc953_additions.py
-python scripts/validate_submission.py notebooks/submission_v2_pmc953_additions.csv
 ```
 
-Ожидаемый результат: `notebooks/submission_v2_pmc953_additions.csv` на **597 строк**, с колонками `index` и `SI VACV`, без NaN и отрицательных значений. Оба валидатора должны вернуть `PASS`.
-
-Дополнительно создаются:
-
-- `notebooks/executed_v2_pmc953_additions.ipynb` — выполненный notebook, исключён из Git;
-- `reports/pmc953_reproduction.json` — выполнение ячеек, схема, источники статьи и hashes.
-
-### 7.4. Числовая сверка с исходным CSV
-
-```bash
-python scripts/run_pmc953_additions.py \
-  --reference /absolute/path/submission_v2_pmc953_additions.csv
-```
-
-Сравнение выполняется **только после независимого обучения**. Требуется max absolute difference не более `1e-8`.
-
-### 7.5. Обновление публичных ChEMBL-данных
+Для обновления ChEMBL через API:
 
 ```bash
 python scripts/download_public_data.py --refresh
 python scripts/build_ec50_cc50_pairs.py
 ```
 
-ChEMBL API может ограничивать запросы; уже скачанные публичные таблицы включены в репозиторий.
+Уже скачанные публичные таблицы включены, поэтому сетевое обновление не требуется для обычного запуска.
 
-## 8. Ограничения интерпретации
+### 6.3. Финальный ensemble 72 155.31593
 
-- Нижние границы вида `CC50 > X` не выдаются за точные измерения.
+```bash
+python scripts/download_public_model.py
+python scripts/build_final_notebooks.py
+python scripts/run_pipeline.py --pipeline final
+python scripts/validate_submission.py notebooks/submission_bsc40_public_sar_5050.csv
+```
+
+`download_public_model.py` по умолчанию проверяет включённый CSV офлайн. Для повторной загрузки pinned source:
+
+```bash
+python scripts/download_public_model.py --refresh
+```
+
+Ожидаемый результат: `notebooks/submission_bsc40_public_sar_5050.csv`, 597 строк, колонки `index` и `SI VACV`, конечные неотрицательные прогнозы. Проверочный отчёт: `reports/final_ensemble_reproduction.json`.
+
+### 6.4. Дополнительный structural-SAR эксперимент
+
+```bash
+python scripts/build_final_notebooks.py
+python scripts/run_pipeline.py --pipeline from_scratch
+python scripts/validate_submission.py notebooks/submission_bsc40_public_sar_direct.csv
+```
+
+Ожидаемый результат: `notebooks/submission_bsc40_public_sar_direct.csv`. Проверочный отчёт: `reports/from_scratch_reproduction.json`. Для сдачи используется основной pipeline из раздела 6.3.
+
+### 6.5. Числовая сверка с исходным candidate
+
+Если сохранился ранее отправленный CSV, его можно указать для сравнения **после** независимого выполнения notebook:
+
+```bash
+python scripts/run_pipeline.py --pipeline final --reference /absolute/path/submission_bsc40_public_sar_5050.csv
+python scripts/run_pipeline.py --pipeline from_scratch --reference /absolute/path/submission_bsc40_public_sar_direct.csv
+```
+
+Требуемый допуск: max absolute difference не более `1e-8`. Reference не читается notebook во время обучения или inference.
+
+## 7. Что проверяют скрипты
+
+- Схема публичной базы: SMILES, IC50, CC50, SI, DOI и provenance.
+- Формула SI и допустимость границ измерений.
+- SHA-256 и размер external public component.
+- Полное выполнение всех кодовых ячеек без ошибок.
+- 597 уникальных index в порядке test.
+- Отсутствие NaN, inf и отрицательных прогнозов.
+- Отсутствие загрузки сохранённых OOF-массивов.
+- Числовое совпадение с reference, если он передан после запуска.
+
+## 8. Фактическая проверка этого репозитория
+
+Локальный запуск после переноса pipeline дал следующие результаты:
+
+| Проверка | Финальный ensemble | Structural-SAR эксперимент |
+|---|---:|---:|
+| Кодовые ячейки / ошибки | 10 / 0 | 10 / 0 |
+| Строки submission | 597 | 597 |
+| Все значения конечны и неотрицательны | PASS | PASS |
+| Индексы совпадают с test | PASS | PASS |
+| Сохранённые OOF не загружаются | PASS | PASS |
+| Max abs diff с исходным candidate | **≤ 1.1368683772161603e-13** | **1.1368683772161603e-13** |
+| Общий статус | **PASS** | **PASS** |
+
+SHA-256 повторных и исходных CSV различаются из-за сериализации последних знаков, но численные прогнозы совпадают многократно точнее допуска `1e-8`. Полные результаты и hashes находятся в `reports/final_ensemble_reproduction.json` и `reports/from_scratch_reproduction.json`.
+
+## 9. Ограничения интерпретации
+
+- Публичные SAR-правила являются эвристиками, а не новыми экспериментальными измерениями.
 - Публичные assay могут отличаться клеточной линией и протоколом от скрытого scoring.
-- Локальная MSE восстановленного reference не является независимой оценкой.
+- Нижние границы `CC50 > X` не считаются точными значениями.
+- Локальная reconstructed MSE не является независимой оценкой.
 - Public leaderboard охватывает только часть test; private score не экстраполируется.
-- Одинаковый официальный MSE у Wiley/BSC-40 и PMC953-версии не позволяет утверждать официальное улучшение последней.
-- Adefovir и sid103210702 остаются трудными хвостовыми объектами: релевантных high-SI аналогов мало.
-- Готовый CSV не заменяет обучение: финальный notebook каждый раз воспроизводит его из исходного train и публичных данных.
+- Заявленный сторонним репозиторием score не принимается как независимая проверка; в таблице используются score загрузок пользователя для конкретных версий этого проекта.
 
-Проект распространяется по лицензии MIT.
+Проект распространяется по лицензии MIT. Права на сторонний публичный компонент и условия его исходного репозитория указаны отдельно в `docs/THIRD_PARTY.md`.

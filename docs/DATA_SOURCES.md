@@ -18,7 +18,7 @@
 
 ### BSC-40 / тековиримат
 
-Wiley/BSC-40 baseline, сохранённый внутри текущей PMC953-версии, использует запись **CHEMBL221054** из документа **CHEMBL1142975**:
+BSC-40 component использует запись **CHEMBL221054** из документа **CHEMBL1142975**:
 
 - DOI: `10.1021/jm061484y`;
 - PMID: `17335190`;
@@ -38,9 +38,9 @@ CC50 является нижней границей, а не точным зна
 - AID1778687/AID1778686 — адамантановая серия PMC9533879.
 - AID217967/AID232802 — virus rating и toxic level.
 
-### Статья PMC9533879 в текущем финале
+### Статья PMC9533879
 
-Часть данных текущего решения взята из Table 1 статьи **«Adamantane derivatives as potential inhibitors of p37 major envelope protein and poxvirus reproduction. Design, synthesis and antiviral activity»**:
+Дополнительный эксперимент использует Table 1 статьи **«Adamantane derivatives as potential inhibitors of p37 major envelope protein and poxvirus reproduction. Design, synthesis and antiviral activity»**:
 
 - открытая статья: `https://pmc.ncbi.nlm.nih.gov/articles/PMC9533879/`;
 - DOI: `10.1016/j.ejmech.2021.113485`;
@@ -54,19 +54,31 @@ CC50 является нижней границей, а не точным зна
 - `https://pubchem.ncbi.nlm.nih.gov/rest/pug/assay/aid/1778687/JSON`;
 - `https://pubchem.ncbi.nlm.nih.gov/rest/pug/assay/aid/1778686/JSON`.
 
-В решении используются 10 структурных соответствий. Для `PHXAPFLCZNRMNH`, `NNCDHNYZSIVCDP`, `RXLXHURLONKPHV`, `QDPJDJANNFBCGF`, `SEARXSRJDLULHH`, `JGLLXXRUZXVXCF`, `CJTQZZNWYVVBOU` CC50 задано отношением `>`; вычисленный SI является нижней границей. Для `VVBVERYXPHOGOU`, `FZUDUGQXCHQOAI`, `TVRAWMUKPGMPSP` используется точное отношение `=`.
+В эксперименте используются 10 структурных соответствий. Для `PHXAPFLCZNRMNH`, `NNCDHNYZSIVCDP`, `RXLXHURLONKPHV`, `QDPJDJANNFBCGF`, `SEARXSRJDLULHH`, `JGLLXXRUZXVXCF`, `CJTQZZNWYVVBOU` CC50 задано отношением `>`; вычисленный SI является нижней границей. Для `VVBVERYXPHOGOU`, `FZUDUGQXCHQOAI`, `TVRAWMUKPGMPSP` используется точное отношение `=`.
 
-Все 10 пар IC50/CC50 внесены в `data/public_si_database.csv` с DOI, assay source и `cc50_bound`. SI вычисляется как CC50/IC50, а не копируется из округлённого значения.
+Все 10 пар IC50/CC50 внесены в `data/public_si_database.csv` с DOI, assay source и `cc50_bound`. SI вычисляется как CC50/IC50, а не копируется из округлённого значения. PMC953-слой сохранён как эксперимент; финальный ensemble 72k использует Wiley/BSC-40 component без этого дополнительного слоя.
 
 ## Открытые публикации
 
 - Wiley, «Design, Synthesis, and Biological Evaluation of (+)-Camphor- and (−)-Fenchone-Based Derivatives as Potent Orthopoxvirus Inhibitors», DOI `10.1002/cmdc.202100771`. В baseline используются в том числе Table 1: `2c` (CC50 = 2904.9 µM, IC50 = 11.1 µM) и `3c-ks-347` (CC50 = 946.8 µM, IC50 = 2.2 µM).
-- «Adamantane derivatives as potential inhibitors of p37 major envelope protein and poxvirus reproduction», DOI `10.1016/j.ejmech.2021.113485`, PMC9533879 — источник текущего финального слоя.
+- «Adamantane derivatives as potential inhibitors of p37 major envelope protein and poxvirus reproduction», DOI `10.1016/j.ejmech.2021.113485`, PMC9533879.
 - «Antiviral activities of two nucleos(t)ide analogs against vaccinia and mpox viruses in primary human fibroblasts», PMC10055413.
 - «Antiviral Activity of 4′-thioIDU and Thymidine Analogs», PMC3185742.
 - «Identification of In Vitro Inhibitors of Monkeypox Replication», DOI `10.1128/spectrum.04745-22`, PMC10434227.
 - Viruses 2023 adamantane series, DOI `10.3390/v15010029`, PMC9865139.
 - PRK neplanocin series, DOI `10.1021/jm00080a018`.
+
+## External public model component
+
+Финальный ensemble дополнительно использует опубликованный результат инференса Anti7:
+
+- репозиторий: `https://github.com/Velsaf-dev/molecular-ap-model`;
+- commit: `2697ab703963d34c748912048134b8b725633cd7`;
+- файл: `experiments/exp_017_pure_ml_ultra_sota/submission.csv`;
+- локальная копия: `data/public_model_exp017.csv`;
+- SHA-256: `d88cd19486c23b3ba44c73f898ac6dba7731b252ec35fefe3806435d912ca99b`.
+
+Это **модельные прогнозы, а не экспериментальные SI-метки**. Они не добавляются в обучающую выборку и не включаются в публичную SI-базу. Компонент смешивается с заново обученным BSC-40 только на последнем шаге. Атрибуция и границы воспроизводимости описаны в `docs/THIRD_PARTY.md`.
 
 ## Правила включения
 
@@ -76,3 +88,4 @@ CC50 является нижней границей, а не точным зна
 - NCGC без DOI и независимой проверки исключён из supervised SI-разметки.
 - Скрытые competition labels и test-концентрации в публичную базу не включаются.
 - Готовые test predictions не используются как источник обучающих данных.
+- External predictions используются как отдельный модельный компонент ensemble с явным источником, pinned commit и контрольной суммой.
