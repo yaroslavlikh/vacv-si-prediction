@@ -2,18 +2,6 @@
   "date": "2026-11-08",
   "scores": [
     {
-      "file": "submission_bsc40_public_sar_5050.csv",
-      "official_kaggle_mse": 72155.31593,
-      "official_score_source": "user_reported",
-      "local_reconstructed_mse": 35977.407986644226,
-      "local_reconstructed_mae": 70.27906581573598,
-      "kind": "50% retrained Wiley/BSC-40 + 50% external Anti7 public exp_017 model component",
-      "standalone_from_scratch": false,
-      "external_public_source": "https://github.com/Velsaf-dev/molecular-ap-model",
-      "external_public_commit": "2697ab703963d34c748912048134b8b725633cd7",
-      "note": "Current final and best user-reported official Kaggle MSE"
-    },
-    {
       "file": "submission_bsc40_public_sar_direct.csv",
       "official_kaggle_mse": 82826.34914,
       "official_score_source": "user_reported",
@@ -22,7 +10,7 @@
       "kind": "Fully retrained Wiley/BSC-40 + explicit public structural SAR priors",
       "standalone_from_scratch": true,
       "external_pretrained_predictions_loaded": false,
-      "note": "Fully from-scratch alternative; official score is not interchanged with the final ensemble"
+      "note": "Current final; no external model component or ready predictions"
     },
     {
       "file": "submission_v2_pmc953_additions.csv",
@@ -31,7 +19,7 @@
       "local_reconstructed_mse": 72687.72206955872,
       "kind": "Wiley/BSC-40 baseline + ten structure matches from PMC9533879 article",
       "article_doi": "10.1016/j.ejmech.2021.113485",
-      "note": "Previous final; user reported the same official Kaggle MSE as Wiley/BSC-40"
+      "note": "Previous experiment; same official Kaggle MSE as Wiley/BSC-40"
     },
     {
       "file": "submission_v2_wiley_bsc40.csv",
@@ -39,7 +27,7 @@
       "official_score_source": "user_reported",
       "local_reconstructed_mse": 72892.61237320166,
       "kind": "Public hybrid v2 + 12 post-v2 locks + four Wiley/ChEMBL BSC-40 corrections",
-      "note": "Retrained own component of the current final ensemble"
+      "note": "Retrained base of the current final"
     },
     {
       "file": "submission_target50_ensemble.csv",
@@ -63,7 +51,7 @@
       "official_score_source": "user_reported",
       "local_reconstructed_mse": 75990.19712801487,
       "kind": "Public hybrid + confidence-aware ExtraTrees 50/50",
-      "note": "Previous candidate; worse than the current final"
+      "note": "Previous candidate"
     },
     {
       "file": "submission_public_hybrid_v2.csv",

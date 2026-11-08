@@ -57,31 +57,13 @@ Pipeline этого эксперимента:
 
 Проверка сохранена в `reports/pmc953_reproduction.json`; проверка Wiley/BSC-40 — в `reports/wiley_bsc40_reproduction.json`.
 
-## Текущий финал: external ensemble 50/50
+## Текущий финал: BSC-40 + structural SAR
 
-Следующий эксперимент проверил смешивание заново обученного Wiley/BSC-40 с публичным модельным компонентом Anti7 `exp_017_pure_ml_ultra_sota`:
-
-```text
-SI_final = 0.5 × SI_BSC40_retrained + 0.5 × SI_Anti7_public_exp017
-```
-
-- Источник external component: https://github.com/Velsaf-dev/molecular-ap-model.
-- Commit: `2697ab703963d34c748912048134b8b725633cd7`.
-- External component не добавляется в train и не называется экспериментальной SI-меткой.
-- Собственные 30 LightGBM-моделей переобучаются в `reproducible_public_sar_5050.ipynb`.
-- Локальная диагностическая MSE external component: **61 667.64681**.
-- Локальная диагностическая MSE ensemble: **35 977.40799**, MAE **70.27907**.
-- Сообщённый пользователем официальный Kaggle MSE ensemble: **72 155.31593**. Это текущий финал.
-
-Публичный модельный компонент является штатной частью финального pipeline. Его версия, источник и контрольная сумма зафиксированы, а весь ensemble воспроизводится одним notebook.
-
-## Дополнительный structural-SAR эксперимент
-
-`reproducible_bsc40_public_sar_direct.ipynb` не загружает готовые public submissions, public OOF или сохранённые модели. Он заново обучает BSC-40 и применяет structural SAR-правила из публичного решения только по SMILES/SMARTS. Эти правила являются эвристиками, а не assay-измерениями.
+`reproducible_bsc40_public_sar_direct.ipynb` не загружает готовые public submissions, public OOF, сохранённые модели или внешние model predictions. Он заново обучает BSC-40 и применяет structural SAR-правила из публичного решения только по SMILES/SMARTS. Эти правила являются эвристиками, а не assay-измерениями.
 
 - Изменено 35 строк относительно BSC-40.
 - Локальная диагностическая MSE: **45 095.15858**, MAE **55.26999**.
 - Сообщённый пользователем официальный Kaggle MSE: **82 826.34914**.
-- Official score этой версии не смешивается с official score external ensemble.
+- Внешний model component и ensemble 50/50 удалены из текущего финального pipeline.
 
-Локальная диагностика не является независимой оценкой и не используется для обучения или выбора финальных значений. Результаты чистых запусков записываются в `reports/final_ensemble_reproduction.json` и `reports/from_scratch_reproduction.json`; официальные результаты версий сохранены в `reports/official_scores.json`.
+Локальная диагностика не является независимой оценкой и не используется для обучения или выбора финальных значений. Результат чистого запуска записывается в `reports/final_reproduction.json`; официальные результаты версий сохранены в `reports/official_scores.json`.

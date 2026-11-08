@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Execute and validate either the final ensemble or from-scratch pipeline."""
+"""Execute and validate the final from-scratch SI VACV pipeline."""
 from pathlib import Path
 import argparse
 import hashlib
@@ -16,17 +16,9 @@ NOTEBOOKS = ROOT / "notebooks"
 REPORTS = ROOT / "reports"
 PIPELINES = {
     "final": {
-        "notebook": "reproducible_public_sar_5050.ipynb",
-        "output": "submission_bsc40_public_sar_5050.csv",
-        "report": "final_ensemble_reproduction.json",
-        "official": 72155.31593,
-        "standalone": False,
-        "external": True,
-    },
-    "from_scratch": {
         "notebook": "reproducible_bsc40_public_sar_direct.ipynb",
         "output": "submission_bsc40_public_sar_direct.csv",
-        "report": "from_scratch_reproduction.json",
+        "report": "final_reproduction.json",
         "official": 82826.34914,
         "standalone": True,
         "external": False,
@@ -44,8 +36,6 @@ required = [
     "data/molecular_activity/test.csv",
     "external_training_labels.csv",
 ]
-if config["external"]:
-    required.append("data/public_model_exp017.csv")
 for relative in required:
     if not (ROOT / relative).is_file():
         raise SystemExit(f"Missing required input: {relative}")

@@ -17,7 +17,6 @@ external_training_labels.csv
 
 # Executed notebooks, notebook-local run reports and local logs
 notebooks/executed_*.ipynb
-notebooks/final_ensemble_run_report.json
 notebooks/post_v2_notebook_run_report.json
 notebooks/public_sar_direct_report.json
 notebooks/public_v2_notebook_run_report.json

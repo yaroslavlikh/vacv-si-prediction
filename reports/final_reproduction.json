@@ -1,13 +1,13 @@
 {
   "status": "PASS",
   "issues": [],
-  "pipeline": "from_scratch",
+  "pipeline": "final",
   "notebook": "reproducible_bsc40_public_sar_direct.ipynb",
-  "executed_notebook": "executed_from_scratch.ipynb",
+  "executed_notebook": "executed_final.ipynb",
   "code_cells": 10,
   "errors": 0,
   "execution_complete": true,
-  "seconds": 9.608646869659424,
+  "seconds": 9.96846890449524,
   "rows": 597,
   "columns": [
     "index",
@@ -28,14 +28,14 @@
   "loaded_oof_sources": [],
   "test_targets_used_for_fit_or_selection": false,
   "independent_evaluation": false,
-  "reproduced_sha256": "6f7c6cdc0b2d75ce18e806ef6468382631647356a849d1d0a22ef06f37a3ad8d",
+  "reproduced_sha256": "6e6a320406b08186ea4e925b28b13e5c1a47d11d8cd62a7eb369ee33baa771ea",
   "comparison": {
     "reference_provided": true,
     "reference_file": "submission_bsc40_public_sar_direct.csv",
     "reference_sha256": "b47ae834410527e76df6c33cc3e332e89fc5c4c62a04b7de585a2a8cea4855d7",
-    "reproduced_sha256": "6f7c6cdc0b2d75ce18e806ef6468382631647356a849d1d0a22ef06f37a3ad8d",
+    "reproduced_sha256": "6e6a320406b08186ea4e925b28b13e5c1a47d11d8cd62a7eb369ee33baa771ea",
     "byte_identical": false,
-    "max_absolute_difference": 1.1368683772161603e-13,
+    "max_absolute_difference": 2.2737367544323206e-13,
     "tolerance": 1e-08,
     "numerically_verified": true
   }
