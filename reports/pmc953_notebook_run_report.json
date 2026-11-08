@@ -1,7 +1,8 @@
 {
   "official_base_mse_user_reported": 197909.42299,
-  "official_candidate_mse": null,
-  "official_candidate_mse_unknown": true,
+  "official_candidate_mse": 197909.42299,
+  "official_candidate_mse_unknown": false,
+  "official_score_source": "user_reported_same_as_wiley_bsc40",
   "article": "Adamantane derivatives as potential inhibitors of p37 major envelope protein and poxvirus reproduction",
   "pmc": "PMC9533879",
   "doi": "10.1016/j.ejmech.2021.113485",
@@ -27,7 +28,7 @@
     "TVRAWMUKPGMPSP"
   ],
   "excluded": "DYLWMFBGCSKYFJ title-specific conflict; tecovirimat control",
-  "local_base_mse": 72892.61237320164,
+  "local_base_mse": 72892.61237320166,
   "local_candidate_mse": 72687.72206955872,
   "test_targets_used_for_prediction_or_selection": false,
   "independent_local_evaluation": false,

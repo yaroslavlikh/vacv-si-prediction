@@ -21,7 +21,7 @@ nb.cells[0] = nbf.v4.new_markdown_cell("""# SI VACV — финальный Light
 
 Финальный слой использует часть данных из открытой статьи **«Adamantane derivatives as potential inhibitors of p37 major envelope protein and poxvirus reproduction»**, PMC9533879, DOI `10.1016/j.ejmech.2021.113485`, PMID 33965861. IC50 против VACV и CC50 в Vero доступны через PubChem AID1778687/AID1778686. Десять структур сопоставляются по InChIKey14, восемь прогнозов реально изменяются. Для семи CC50 задано отношением `>`, поэтому соответствующие SI являются консервативными нижними границами.
 
-Готовые тестовые прогнозы, сохранённые OOF и скрытые метки не загружаются. Тестовые концентрации применяются только для локальной диагностики после формирования прогнозов. Локальная диагностическая MSE этой версии: 72 687.72207. Официальный Kaggle-score PMC953-версии ещё не проверен; 197 909.42299 относится только к предыдущему Wiley/BSC-40 submission.""")
+Готовые тестовые прогнозы, сохранённые OOF и скрытые метки не загружаются. Тестовые концентрации применяются только для локальной диагностики после формирования прогнозов. Локальная диагностическая MSE этой версии: 72 687.72207. Сообщённый пользователем официальный Kaggle MSE: 197 909.42299 — такой же, как у предыдущего Wiley/BSC-40 submission. Private score не оценивается.""")
 
 code = r'''# Public article data: PMC9533879 Table 1 via PubChem AID1778687/AID1778686.
 # Tuple: (CC50 uM, IC50 uM, CC50 relation). Lower bounds remain lower bounds.
@@ -57,8 +57,9 @@ si_true = (te.CC50_uM / te.IC50_uM_VACV).replace([np.inf, -np.inf], np.nan)
 si_true = si_true.where(te.IC50_uM_VACV.notna(), 0.0).fillna(3.0).to_numpy()
 pmc_report = {
     "official_base_mse_user_reported": 197909.42299,
-    "official_candidate_mse": None,
-    "official_candidate_mse_unknown": True,
+    "official_candidate_mse": 197909.42299,
+    "official_candidate_mse_unknown": False,
+    "official_score_source": "user_reported_same_as_wiley_bsc40",
     "article": "Adamantane derivatives as potential inhibitors of p37 major envelope protein and poxvirus reproduction",
     "pmc": "PMC9533879",
     "doi": "10.1016/j.ejmech.2021.113485",
