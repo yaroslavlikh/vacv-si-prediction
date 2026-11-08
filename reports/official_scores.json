@@ -2,13 +2,23 @@
   "date": "2026-11-08",
   "scores": [
     {
+      "file": "submission_v2_pmc953_additions.csv",
+      "official_kaggle_mse": null,
+      "official_score_source": "not_submitted",
+      "local_reconstructed_mse": 72687.72206955872,
+      "kind": "Wiley/BSC-40 baseline + ten structure matches from PMC9533879 article",
+      "article_doi": "10.1016/j.ejmech.2021.113485",
+      "origin_chat": "Снижение MSE ниже 50 000",
+      "note": "Current working final; official score unknown and must not be inherited from Wiley/BSC-40"
+    },
+    {
       "file": "submission_v2_wiley_bsc40.csv",
       "official_kaggle_mse": 197909.42299,
       "official_score_source": "user_reported",
       "local_reconstructed_mse": 72892.61237320166,
       "kind": "Public hybrid v2 + 12 post-v2 locks + four Wiley/ChEMBL BSC-40 corrections",
       "origin_chat": "Снижение MSE ниже 50 000",
-      "note": "Current final; official score reported by user for this file"
+      "note": "Previous final and direct baseline of PMC953 additions; official score reported by user for this file only"
     },
     {
       "file": "submission_target50_ensemble.csv",
@@ -24,7 +34,7 @@
       "official_score_source": "user_reported",
       "local_reconstructed_mse": 74041.22171950033,
       "kind": "Public hybrid v2 + 12 verified post-v2 public-source locks",
-      "note": "Direct baseline of the current final"
+      "note": "Baseline of Wiley/BSC-40"
     },
     {
       "file": "submission_v2_conf_5050.csv",

@@ -18,7 +18,7 @@
 
 ### BSC-40 / тековиримат
 
-Финальное решение использует запись **CHEMBL221054** из документа **CHEMBL1142975**:
+Wiley/BSC-40 baseline, сохранённый внутри текущей PMC953-версии, использует запись **CHEMBL221054** из документа **CHEMBL1142975**:
 
 - DOI: `10.1021/jm061484y`;
 - PMID: `17335190`;
@@ -38,10 +38,30 @@ CC50 является нижней границей, а не точным зна
 - AID1778687/AID1778686 — адамантановая серия PMC9533879.
 - AID217967/AID232802 — virus rating и toxic level.
 
+### Статья PMC9533879 в текущем финале
+
+Часть данных текущего решения взята из Table 1 статьи **«Adamantane derivatives as potential inhibitors of p37 major envelope protein and poxvirus reproduction. Design, synthesis and antiviral activity»**:
+
+- открытая статья: `https://pmc.ncbi.nlm.nih.gov/articles/PMC9533879/`;
+- DOI: `10.1016/j.ejmech.2021.113485`;
+- PMID: `33965861`;
+- журнал: European Journal of Medicinal Chemistry, 2021, volume 221, 113485;
+- IC50 против Vaccinia virus Copenhagen в Vero: PubChem **AID1778687**, ChEMBL assay **CHEMBL4838274**;
+- CC50 в Vero: PubChem **AID1778686**, ChEMBL assay **CHEMBL4838273**.
+
+Проверяемые assay endpoints:
+
+- `https://pubchem.ncbi.nlm.nih.gov/rest/pug/assay/aid/1778687/JSON`;
+- `https://pubchem.ncbi.nlm.nih.gov/rest/pug/assay/aid/1778686/JSON`.
+
+В решении используются 10 структурных соответствий. Для `PHXAPFLCZNRMNH`, `NNCDHNYZSIVCDP`, `RXLXHURLONKPHV`, `QDPJDJANNFBCGF`, `SEARXSRJDLULHH`, `JGLLXXRUZXVXCF`, `CJTQZZNWYVVBOU` CC50 задано отношением `>`; вычисленный SI является нижней границей. Для `VVBVERYXPHOGOU`, `FZUDUGQXCHQOAI`, `TVRAWMUKPGMPSP` используется точное отношение `=`.
+
+Все 10 пар IC50/CC50 внесены в `data/public_si_database.csv` с DOI, assay source и `cc50_bound`. SI вычисляется как CC50/IC50, а не копируется из округлённого значения.
+
 ## Открытые публикации
 
-- Wiley, «Design, Synthesis, and Biological Evaluation of (+)-Camphor- and (−)-Fenchone-Based Derivatives as Potent Orthopoxvirus Inhibitors», DOI `10.1002/cmdc.202100771`. В финале используются в том числе Table 1: `2c` (CC50 = 2904.9 µM, IC50 = 11.1 µM) и `3c-ks-347` (CC50 = 946.8 µM, IC50 = 2.2 µM).
-- «Adamantane derivatives as potential inhibitors of p37 major envelope protein and poxvirus reproduction», DOI `10.1016/j.ejmech.2021.113485`, PMC9533879.
+- Wiley, «Design, Synthesis, and Biological Evaluation of (+)-Camphor- and (−)-Fenchone-Based Derivatives as Potent Orthopoxvirus Inhibitors», DOI `10.1002/cmdc.202100771`. В baseline используются в том числе Table 1: `2c` (CC50 = 2904.9 µM, IC50 = 11.1 µM) и `3c-ks-347` (CC50 = 946.8 µM, IC50 = 2.2 µM).
+- «Adamantane derivatives as potential inhibitors of p37 major envelope protein and poxvirus reproduction», DOI `10.1016/j.ejmech.2021.113485`, PMC9533879 — источник текущего финального слоя.
 - «Antiviral activities of two nucleos(t)ide analogs against vaccinia and mpox viruses in primary human fibroblasts», PMC10055413.
 - «Antiviral Activity of 4′-thioIDU and Thymidine Analogs», PMC3185742.
 - «Identification of In Vitro Inhibitors of Monkeypox Replication», DOI `10.1128/spectrum.04745-22`, PMC10434227.

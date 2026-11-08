@@ -1,0 +1,38 @@
+{
+  "status": "PASS",
+  "issues": [],
+  "notebook": "reproducible_v2_pmc953_additions.ipynb",
+  "executed_notebook": "executed_v2_pmc953_additions.ipynb",
+  "code_cells": 10,
+  "errors": 0,
+  "execution_complete": true,
+  "rows": 597,
+  "matched_article_structures": 10,
+  "changed_rows_from_wiley_bsc40": 8,
+  "reproduced_sha256": "b9be636a8c2ec2f1f8769dde418f607f9604e04d9f8cb287a4fc20d0c4df8c6b",
+  "comparison": {
+    "reference_provided": true,
+    "reference_file": "submission_v2_pmc953_additions.csv",
+    "reference_sha256": "2a534a83134a6f4349694b55644d4410fdb4a54c12094f937ac9f3e8fa017e24",
+    "reproduced_sha256": "b9be636a8c2ec2f1f8769dde418f607f9604e04d9f8cb287a4fc20d0c4df8c6b",
+    "byte_identical": false,
+    "max_absolute_difference": 1.1368683772161603e-13,
+    "tolerance": 1e-08,
+    "numerically_verified": true
+  },
+  "official_kaggle_mse": null,
+  "official_kaggle_mse_status": "not_submitted",
+  "base_wiley_bsc40_official_mse_user_reported": 197909.42299,
+  "local_reconstructed_mse": 72687.72206955872,
+  "local_reference_warning": "Diagnostic only; not an independent Kaggle score",
+  "article": "Adamantane derivatives as potential inhibitors of p37 major envelope protein and poxvirus reproduction",
+  "pmc": "PMC9533879",
+  "doi": "10.1016/j.ejmech.2021.113485",
+  "pmid": 33965861,
+  "pubchem_assays": {
+    "IC50_VACV": "AID1778687",
+    "CC50_Vero": "AID1778686"
+  },
+  "test_targets_used_for_fit_or_selection": false,
+  "origin_chat": "Снижение MSE ниже 50 000"
+}

@@ -62,6 +62,24 @@ wiley = {
 for name, (smiles, cc50, ic50) in wiley.items():
     rows.append(record(smiles, ic50, cc50, "10.1002/cmdc.202100771", f"Wiley {name}"))
 
+# PMC9533879 Table 1; PubChem AID1778687 (VACV IC50) / AID1778686 (Vero CC50).
+# Relation ">" is preserved as a lower bound, not converted into an exact CC50.
+pmc953 = [
+    ("O=C(NNC(=O)C12C[C@H]3C[C@H](C[C@H](C3)C1)C2)C1=CC=C(C(F)(F)F)C=C1", 1.07, 273.0, ">"),
+    ("CN(C(=O)C1=CC=C(C(F)(F)F)C=C1)C12C[C@H]3C[C@H](C[C@H](C3)C1)C2", 4.85, 296.4, ">"),
+    ("O=C(NC1[C@H]2C[C@@H]3C[C@@H](C[C@H]1C3)C2)C1=CC=C(C(F)(F)F)C=C1", .216, 309.0, ">"),
+    ("O=C(NNC1[C@H]2C[C@@H]3C[C@@H](C[C@H]1C3)C2)C1=CC=C(C(F)(F)F)C=C1", 2.8, 296.0, ">"),
+    ("O=C(NN=C1[C@H]2C[C@@H]3C[C@@H](C[C@H]1C3)C2)C1=CC=C(C(F)(F)F)C=C1", 198.0, 297.0, ">"),
+    ("C[C@H](NNC(=O)C1=CC=C(C(F)(F)F)C=C1)C12C[C@H]3C[C@H](C[C@H](C3)C1)C2", .515, 14.0, ""),
+    ("CC[C@@]12C[C@H]3C[C@@H](C1)C[C@](C(=O)NNC(=O)C1=CC=C(C(F)(F)F)C=C1)(C3)C2", 12.53, 47.0, ""),
+    ("O=C(NC12C[C@H]3C[C@H](C[C@H](C3)C1)C2)C1=CC=C(C(F)(F)F)C=C1", .133, 309.3, ">"),
+    ("C[C@@]12C[C@H]3C[C@@H](C1)C[C@](NC(=O)C1=CC=C(C(F)(F)F)C=C1)(C3)C2", 8.98, 296.4, ">"),
+    ("CC[C@@]12C[C@H]3C[C@@H](C1)C[C@](NNC(=O)C1=CC=C(C(F)(F)F)C=C1)(C3)C2", 1.66, 2.5, ""),
+]
+for smiles, ic50, cc50, bound in pmc953:
+    rows.append(record(smiles, ic50, cc50, "10.1016/j.ejmech.2021.113485",
+                       "PMC9533879 Table 1; PubChem AID1778687/AID1778686", bound))
+
 rows.append(record("NC1=NC(=O)N([C@@H]2S[C@H](CO)[C@@H](O)[C@@H]2O)C=C1F",
                    .1, 4.6, "", "PMC3185742 4-thio-5-fluoro-cytidine"))
 rows.append(record("C[C@H](O)C1=C[C@@H](n2cnc3c(N)ncnc32)[C@H](O)[C@@H]1O",
