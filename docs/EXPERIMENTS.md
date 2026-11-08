@@ -32,8 +32,12 @@
 - `confidence_shrink.py` — прогноз уменьшается пропорционально Tanimoto² при низком сходстве. OOF no-top7 = 17 780.53, локальная MSE = 80 889.37.
 - `confidence_variants.py` — пять вариантов Tanimoto¹/²/⁴ и две смеси. Локальные MSE находятся в диапазоне 80 775–81 163. Официальные score этих вариантов пока не проверены.
 
+## Финальный ансамбль
+
+`reproducible_ensemble_ncgc.ipynb` объединяет public hybrid и confidence-aware ExtraTrees в пропорции 50/50. Локальная MSE `v2_conf_5050` = **75 990.20**, OOF no-max = 98 591.12, no-top7 = 16 642.30. Файл `ensemble_ncgc_report.json` содержит также фиксированные варианты весов.
+
 ## Официальные результаты
 
 - Гибрид v2: около 203 000 MSE на Kaggle.
 - Чистый ExtraTrees: 211 415.38617 MSE на Kaggle.
-- Более новые confidence-варианты ещё не отправлялись.
+- Финальный ансамбль `v2_conf_5050` ещё не отправлялся на Kaggle.

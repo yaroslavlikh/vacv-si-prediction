@@ -2,6 +2,13 @@
   "date": "2026-11-08",
   "scores": [
     {
+      "file": "submission_v2_conf_5050.csv",
+      "official_kaggle_mse": null,
+      "local_reconstructed_mse": 75990.19712801487,
+      "kind": "Public hybrid + confidence-aware ExtraTrees 50/50",
+      "note": "Final ensemble; official score not submitted yet"
+    },
+    {
       "file": "submission_public_hybrid_v2.csv",
       "official_kaggle_mse_approx": 203000,
       "local_reconstructed_mse": 81312.2023976339,
@@ -13,7 +20,7 @@
       "official_kaggle_mse": 211415.38617,
       "local_reconstructed_mse": 80742.9215472001,
       "kind": "ExtraTrees log1p(SI) + supervised exact nearest neighbor",
-      "note": "Final clean supervised model"
+      "note": "Previous clean supervised model"
     }
   ],
   "private_score_inference": "Not estimated",

@@ -23,8 +23,8 @@
 2. Проверены fingerprint-бейзлайны, LightGBM, CatBoost, ExtraTrees, kNN, ChemBERTa и раздельные IC50/CC50-модели.
 3. Отфильтрована внешняя разметка по формуле SI, InChIKey, пересечениям с train и независимыми первоисточниками.
 4. Собрана единая публичная база **SMILES–IC50–CC50–SI–DOI** на **2 198 записей**.
-5. Выбрана финальная чистая supervised-модель **ExtraTrees на `log1p(SI)`** с supervised exact nearest neighbor.
-6. Полный pipeline и оба notebook запущены и проверены с нуля.
+5. Выбран финальный ансамбль **public hybrid + confidence-aware ExtraTrees** (`v2_conf_5050`) с supervised exact nearest neighbor.
+6. Полный pipeline и все три notebook запущены и проверены с нуля.
 
 ## 3. Эксперименты и решения
 
@@ -92,10 +92,18 @@
 - 167 MACCS keys;
 - 9 RDKit-дескрипторов: MolWt, MolLogP, TPSA, HDonors, HAcceptors, rotatable bonds, ring count, FractionCSP3, heavy atom count.
 
-### Обучение
+### Обучение и ансамбль
+
+Финальная версия `v2_conf_5050` состоит из двух независимо обучаемых компонентов:
+
+1. **Public hybrid**: 30 LightGBM на `log1p(SI)` с Morgan, MACCS и RDKit-признаками, затем публичные измерения из ChEMBL, PubChem и открытых статей.
+2. **Confidence-aware ExtraTrees**: 60 деревьев, `max_features=0.4`, `min_samples_leaf=1`, с затуханием прогноза пропорционально Tanimoto-similarity при низкой уверенности.
+
+Они объединяются **50/50**. Параметры ансамбля и confidence не подбираются по скрытому test.
+
+Общие настройки ExtraTrees:
 
 - Цель: `log1p(SI)`.
-- ExtraTreesRegressor: 60 деревьев, `max_features=0.4`, `min_samples_leaf=1`.
 - Протоколы: canonical InChIKey14 и scaffold.
 - Seeds: 42, 13, 79.
 - Валидация: 5-fold GroupKFold для каждого seed.
@@ -115,23 +123,25 @@
 
 | Версия | Официальный Kaggle MSE | Локальная MSE | Комментарий |
 |---|---:|---:|---|
+| **v2_conf_5050: public hybrid + confidence ExtraTrees** | Пока не проверено | **75 990.20** | **Финальная версия** |
 | Гибрид v2: LightGBM + public literature lookup | ≈203 000 | 81 312.20 | Не чистая supervised-модель |
-| **ExtraTrees log1p(SI) + exact neighbor** | **211 415.38617** | **80 742.92** | Финальная чистая ML-модель |
+| ExtraTrees log1p(SI) + exact neighbor | 211 415.38617 | 80 742.92 | Предыдущая чистая ML-модель |
 | Confidence Tanimoto² | Не проверено | 80 889.37 | Более осторожные прогнозы на незнакомых структурах |
 
-OOF финального ExtraTrees:
+OOF финального ансамбля:
 
-- canonical full MSE: 4 128 003.66;
-- canonical no-max: **73 927.60**;
-- canonical no-top7: **25 791.78**;
-- scaffold no-max: 227 290.91;
-- scaffold no-top7: 20 001.97.
+- full MSE: 4 144 285.85;
+- no-max: **98 591.12**;
+- no-top7: **16 642.30**.
+
+Для сравнения, у отдельного ExtraTrees canonical no-max было 73 927.60, no-top7 — 25 791.78.
 
 Локальная диагностика не является независимой оценкой. Она восстановлена из test-концентраций только после обучения и **не используется для выбора модели**. Public leaderboard охватывает лишь часть test, поэтому частный score не экстраполируется.
 
 ## 6. Структура репозитория
 
-- `notebooks/reproducible_clean_et_log.ipynb` — финальный ExtraTrees notebook.
+- `notebooks/reproducible_ensemble_ncgc.ipynb` — **финальный ансамбль `v2_conf_5050`**.
+- `notebooks/reproducible_clean_et_log.ipynb` — отдельный ExtraTrees без ансамбля.
 - `notebooks/reproducible_confidence_variants.ipynb` — пять confidence-aware вариантов.
 - `scripts/download_public_data.py` — проверка и загрузка ChEMBL-данных.
 - `scripts/build_ec50_cc50_pairs.py` — сборка пар EC50/CC50 из сырых таблиц.
@@ -177,10 +187,13 @@ python scripts/validate_data.py
 python scripts/build_training_labels.py
 python scripts/train_model.py
 python scripts/apply_exact_neighbor.py
-python scripts/validate_submission.py submission_clean_et_log.csv
+cd notebooks
+jupyter nbconvert --to notebook --execute reproducible_ensemble_ncgc.ipynb --output executed_ensemble_ncgc.ipynb
+cd ..
+python scripts/validate_submission.py notebooks/submission_v2_conf_5050.csv
 ```
 
-Ожидаемый результат: файл `submission_clean_et_log.csv` на 597 строк, с колонками `index` и `SI VACV`, без NaN и отрицательных значений. Проверка `validate_submission.py` должна вернуть `PASS`.
+Ожидаемый результат: файл `notebooks/submission_v2_conf_5050.csv` на 597 строк, с колонками `index` и `SI VACV`, без NaN и отрицательных значений. Проверка `validate_submission.py` должна вернуть `PASS`.
 
 ### Запуск финального notebook
 
@@ -188,7 +201,7 @@ python scripts/validate_submission.py submission_clean_et_log.csv
 
 ```bash
 cd notebooks
-jupyter nbconvert --to notebook --execute reproducible_clean_et_log.ipynb --output executed_clean_et_log.ipynb
+jupyter nbconvert --to notebook --execute reproducible_ensemble_ncgc.ipynb --output executed_ensemble_ncgc.ipynb
 ```
 
 ### Обновление ChEMBL
