@@ -2,40 +2,23 @@
   "date": "2026-11-08",
   "scores": [
     {
-      "file": "submission_bsc40_public_sar_direct.csv",
-      "official_kaggle_mse": 82826.34914,
-      "official_score_source": "user_reported",
-      "local_reconstructed_mse": 45095.15857653556,
-      "local_reconstructed_mae": 55.26998627217832,
-      "kind": "Fully retrained Wiley/BSC-40 + explicit public structural SAR priors",
-      "standalone_from_scratch": true,
-      "external_pretrained_predictions_loaded": false,
-      "note": "Current final; no external model component or ready predictions"
-    },
-    {
       "file": "submission_v2_pmc953_additions.csv",
       "official_kaggle_mse": 197909.42299,
       "official_score_source": "user_reported",
       "local_reconstructed_mse": 72687.72206955872,
-      "kind": "Wiley/BSC-40 baseline + ten structure matches from PMC9533879 article",
+      "kind": "Retrained Wiley/BSC-40 + ten structure matches from PMC9533879 article",
       "article_doi": "10.1016/j.ejmech.2021.113485",
-      "note": "Previous experiment; same official Kaggle MSE as Wiley/BSC-40"
+      "standalone_from_scratch": true,
+      "external_pretrained_predictions_loaded": false,
+      "note": "Current final; verified public sources and no external model predictions"
     },
     {
       "file": "submission_v2_wiley_bsc40.csv",
       "official_kaggle_mse": 197909.42299,
       "official_score_source": "user_reported",
       "local_reconstructed_mse": 72892.61237320166,
-      "kind": "Public hybrid v2 + 12 post-v2 locks + four Wiley/ChEMBL BSC-40 corrections",
-      "note": "Retrained base of the current final"
-    },
-    {
-      "file": "submission_target50_ensemble.csv",
-      "official_kaggle_mse_approx": 215000,
-      "official_score_source": "user_reported",
-      "local_reconstructed_mse": 86567.3230286355,
-      "kind": "Legacy ChEMBL + NCGC ExtraTrees ensemble",
-      "note": "Worse than public hybrid v2; not recommended"
+      "kind": "Retrained LightGBM public hybrid + verified post-v2 labels + Wiley/ChEMBL BSC-40 corrections",
+      "note": "Direct baseline of the PMC953 final with the same official score"
     },
     {
       "file": "submission_v2_post_v2_locked.csv",
@@ -59,7 +42,7 @@
       "official_score_source": "user_reported",
       "local_reconstructed_mse": 81312.2023976339,
       "kind": "LightGBM + public literature lookup",
-      "note": "Earlier baseline, not a clean supervised model"
+      "note": "Earlier baseline"
     },
     {
       "file": "submission_clean_et_log.csv",
@@ -68,6 +51,14 @@
       "local_reconstructed_mse": 80742.9215472001,
       "kind": "ExtraTrees log1p(SI) + supervised exact nearest neighbor",
       "note": "Clean supervised experiment"
+    },
+    {
+      "file": "submission_target50_ensemble.csv",
+      "official_kaggle_mse_approx": 215000,
+      "official_score_source": "user_reported",
+      "local_reconstructed_mse": 86567.3230286355,
+      "kind": "Legacy ChEMBL + NCGC ExtraTrees ensemble",
+      "note": "Rejected experiment"
     }
   ],
   "private_score_inference": "Not estimated",

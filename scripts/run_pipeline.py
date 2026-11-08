@@ -16,10 +16,10 @@ NOTEBOOKS = ROOT / "notebooks"
 REPORTS = ROOT / "reports"
 PIPELINES = {
     "final": {
-        "notebook": "reproducible_bsc40_public_sar_direct.ipynb",
-        "output": "submission_bsc40_public_sar_direct.csv",
+        "notebook": "reproducible_v2_pmc953_additions.ipynb",
+        "output": "submission_v2_pmc953_additions.csv",
         "report": "final_reproduction.json",
-        "official": 82826.34914,
+        "official": 197909.42299,
         "standalone": True,
         "external": False,
     },
