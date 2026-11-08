@@ -1,37 +1,153 @@
 # VACV SI Prediction
 
-Воспроизводимый ML-пайплайн для предсказания индекса селективности **SI VACV** по SMILES.
+Воспроизводимый ML-пайплайн для предсказания индекса селективности **SI VACV** по SMILES. Репозиторий содержит финальную модель, публичную базу измерений, скрипты загрузки и проверки данных, а также эксперименты из чата **«Достижение MSE ниже 200 000»**.
 
-## Финальная модель
+## 1. Задача и ограничения
 
-**ExtraTrees на `log1p(SI)` + supervised exact nearest neighbor по Morgan/Tanimoto с проверкой полного InChIKey.**
+Цель — предсказать **SI = CC50 / IC50** для 597 соединений из тестовой выборки.
 
-- 2 протокола разбиения × 3 seed, 60 деревьев ExtraTrees на модель.
-- 320 исходных объектов train + публичная внешняя разметка ChEMBL, PubChem и открытых статей.
-- Валидация external-данных исключает валидационные структуры по InChIKey14/scaffold.
-- Никаких ручных post-hoc замен в test и никаких тестовых концентраций в обучении или прогнозе.
-- Официальный Kaggle-score финальной версии: **211 415.38617 MSE**.
-- Локальная диагностика: **80 742.92 MSE**. Она не является независимой оценкой.
+Исходные данные:
 
-Также приведён гибридный исторический baseline: **около 203 000 MSE на Kaggle** и **81 312.20** локально. Он не является финальной чистой ML-моделью.
+- **320 строк** competition train;
+- **597 строк** competition test;
+- пропущенный IC50 в train обрабатывается как **SI = 0** по исправленной конвенции организаторов;
+- входы модели — только структурная информация из SMILES, а `index` используется как идентификатор;
+- тестовые концентрации **не используются** для обучения, выбора модели или прогнозирования;
+- скрытые метки, OOF-массивы и готовые тестовые прогнозы в репозиторий не включены.
 
-## Структура
+Конкретный `train.csv` и `test.csv` не публикуются. Для воспроизведения соревнования их нужно разместить локально в `data/molecular_activity/`.
 
-- `notebooks/reproducible_clean_et_log.ipynb` — финальный notebook.
-- `notebooks/reproducible_confidence_variants.ipynb` — пять confidence-aware вариантов ExtraTrees.
-- `scripts/download_public_data.py` — проверка/загрузка публичных ChEMBL-данных.
-- `scripts/build_ec50_cc50_pairs.py` — сборка пар EC50/CC50 из сырых ChEMBL-таблиц.
-- `scripts/build_public_database.py` — единая публичная база SMILES–IC50–CC50–SI–DOI.
-- `scripts/validate_data.py` — проверка базы и формулы SI.
+## 2. Что сделано
+
+1. Собраны публичные ChEMBL и PubChem assay-данные и открытые таблицы научных публикаций.
+2. Проверены fingerprint-бейзлайны, LightGBM, CatBoost, ExtraTrees, kNN, ChemBERTa и раздельные IC50/CC50-модели.
+3. Отфильтрована внешняя разметка по формуле SI, InChIKey, пересечениям с train и независимыми первоисточниками.
+4. Собрана единая публичная база **SMILES–IC50–CC50–SI–DOI** на **2 198 записей**.
+5. Выбрана финальная чистая supervised-модель **ExtraTrees на `log1p(SI)`** с supervised exact nearest neighbor.
+6. Полный pipeline и оба notebook запущены и проверены с нуля.
+
+## 3. Эксперименты и решения
+
+| Подход | Что проверено | Результат и решение |
+|---|---|---|
+| Morgan + MACCS + RDKit descriptors, HGB/LightGBM | Базовые признаки и log1p target | Лучший canonical baseline: no-max 136 910.66 |
+| Tail weighting LightGBM | Веса для высоких SI и внешние ChEMBL-строки | Лучший OOF no-max 136 910.66; использован как baseline |
+| ChemBERTa-77M-MTR | Frozen CLS/mean embeddings и их смеси с fingerprints | Canonical no-max 238 847, scaffold no-max 232 611 — хуже baseline |
+| Раздельные IC50 и CC50 | SI = exp(logCC50 − logIC50) | OOF no-max 69 454, но локальная диагностика 981 768 — нестабильно |
+| Scaffold target encoding | Группировка по Murcko scaffold | OOF no-max 155 758 — хуже baseline |
+| CatBoost | Те же признаки и внешняя разметка | OOF-отбор выбрал 100% LightGBM, 0% CatBoost |
+| Мягкий kNN | Соседи по Tanimoto и смешивание с LightGBM | Улучшение одной метрики, но ухудшение хвоста и локальной MSE — отклонён |
+| Capped raw-target MSE | Cap 5000/10000 и tail weight 0/0.5 | Лучший OOF no-max 223 018 — хуже ExtraTrees log(SI) |
+| **ExtraTrees на log1p(SI)** | Прямая supervised-модель и ансамбль seed/protocol | **Canonical OOF no-max 73 927.60, no-top7 25 791.78 — выбрана** |
+| PubChem similarity | До 200 аналогов Adefovir и sid103210702 | Максимальный SI аналогов 66.67 и 314.38 — хвост не закрыт |
+| Confidence shrinkage | Затухание прогноза по Tanimoto¹/²/⁴ и смеси | OOF no-top7 до 17 780.53; локальная MSE около 80.8–81.2 тысяч |
+
+Подробности находятся в `experiments/` и `docs/EXPERIMENTS.md`.
+
+## 4. Данные и их качество
+
+### Публичная SI-база
+
+`data/public_si_database.csv` содержит:
+
+- `SMILES` — структура соединения;
+- `IC50` — активность против VACV в µM;
+- `CC50` — цитотоксичность в µM;
+- `SI` — рассчитанный `CC50 / IC50`;
+- `DOI` — публикация, если она известна;
+- `source`, `cc50_bound`, `InChIKey` — происхождение и ограничения измерения.
+
+Проверка `scripts/validate_data.py` подтвердила:
+
+- 2 198 записей;
+- 0 невалидных SMILES;
+- 0 неположительных IC50/CC50;
+- 0 отрицательных SI;
+- 0 ошибок формулы SI более чем на `1e-6`;
+- 205 записей без DOI — допустимо;
+- повторы InChIKey сохранены, потому что они относятся к разным assay и не усредняются в самой базе.
+
+### Внешняя обучающая разметка
+
+В `external_training_labels.csv` (создаётся при запуске) используются **1 049 внешних структур**, из них **216** присутствуют в competition test.
+
+Фильтрация:
+
+- 605 строк NCGC без DOI и независимой проверки исключены;
+- 4 ChEMBL-выброса SI>10000 исключены;
+- округлённый SI пересчитан как CC50/EC50;
+- для одинаковых SMILES с разными assay используются средние значения, поскольку assay metadata не являются входами модели;
+- исходные competition-метки не перезаписываются;
+- внешние записи исключаются из OOF-фолдов по InChIKey14, а для scaffold-протокола — по scaffold.
+
+Источники и ссылки приведены в `docs/DATA_SOURCES.md`.
+
+## 5. Финальный пайплайн
+
+### Признаки
+
+Для каждой стандартизированной молекулы:
+
+- Morgan fingerprint, radius 2, 2048 бит;
+- 167 MACCS keys;
+- 9 RDKit-дескрипторов: MolWt, MolLogP, TPSA, HDonors, HAcceptors, rotatable bonds, ring count, FractionCSP3, heavy atom count.
+
+### Обучение
+
+- Цель: `log1p(SI)`.
+- ExtraTreesRegressor: 60 деревьев, `max_features=0.4`, `min_samples_leaf=1`.
+- Протоколы: canonical InChIKey14 и scaffold.
+- Seeds: 42, 13, 79.
+- Валидация: 5-fold GroupKFold для каждого seed.
+- Веса train: `1 + SI/100`, внешних структур: `0.1`.
+- Финальный fit выполняется на всех train и внешних данных.
+
+### Supervised exact nearest neighbor
+
+Это часть алгоритма, а не ручная lookup-замена:
+
+- вычисляется Morgan/Tanimoto similarity;
+- совпадение принимается только при `similarity >= 0.999` **и совпадении полного InChIKey**;
+- полный InChIKey нужен, чтобы не склеивать диастереомеры;
+- для OOF внешние совпадения с валидационными структурами удаляются из reference.
+
+### Результаты
+
+| Версия | Официальный Kaggle MSE | Локальная MSE | Комментарий |
+|---|---:|---:|---|
+| Гибрид v2: LightGBM + public literature lookup | ≈203 000 | 81 312.20 | Не чистая supervised-модель |
+| **ExtraTrees log1p(SI) + exact neighbor** | **211 415.38617** | **80 742.92** | Финальная чистая ML-модель |
+| Confidence Tanimoto² | Не проверено | 80 889.37 | Более осторожные прогнозы на незнакомых структурах |
+
+OOF финального ExtraTrees:
+
+- canonical full MSE: 4 128 003.66;
+- canonical no-max: **73 927.60**;
+- canonical no-top7: **25 791.78**;
+- scaffold no-max: 227 290.91;
+- scaffold no-top7: 20 001.97.
+
+Локальная диагностика не является независимой оценкой. Она восстановлена из test-концентраций только после обучения и **не используется для выбора модели**. Public leaderboard охватывает лишь часть test, поэтому частный score не экстраполируется.
+
+## 6. Структура репозитория
+
+- `notebooks/reproducible_clean_et_log.ipynb` — финальный ExtraTrees notebook.
+- `notebooks/reproducible_confidence_variants.ipynb` — пять confidence-aware вариантов.
+- `scripts/download_public_data.py` — проверка и загрузка ChEMBL-данных.
+- `scripts/build_ec50_cc50_pairs.py` — сборка пар EC50/CC50 из сырых таблиц.
+- `scripts/build_public_database.py` — сборка публичной SI-базы.
+- `scripts/validate_data.py` — проверка SMILES, SI и качества базы.
 - `scripts/build_training_labels.py` — фильтрация и сборка внешней разметки.
 - `scripts/train_model.py` — обучение ExtraTrees и OOF-валидация.
 - `scripts/apply_exact_neighbor.py` — supervised nearest-neighbor компонент.
 - `scripts/validate_submission.py` — проверка структуры submission.
-- `experiments/` — скрипты экспериментов из чата «Достижение MSE ниже 200 000».
+- `experiments/` — скрипты экспериментов из указанного чата.
 - `reports/` — небольшие отчёты и метрики, без OOF-массивов и скрытых прогнозов.
-- `data/public_si_database.csv` — публичная база измерений, после запуска `build_public_database.py`.
+- `docs/` — источники и описание экспериментов.
+- `data/public_si_database.csv` — публичная SI-база.
+- `requirements.txt` — зависимости Python.
 
-## Установка
+## 7. Установка
 
 ```bash
 python3 -m venv .venv
@@ -39,18 +155,18 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-## Данные
+## 8. Воспроизведение результатов
 
-Публичные ChEMBL-таблицы и augmentation-набор уже включены. Исходные competition `train.csv` и `test.csv` **не публикуются** и должны быть размещены локально:
+### Размещение competition-данных
 
 ```text
 data/molecular_activity/train.csv
 data/molecular_activity/test.csv
 ```
 
-Они нужны только для воспроизведения соревнования, а не для сборки публичной SI-базы. Скрытые метки, OOF и готовые тестовые прогнозы в репозиторий не включены.
+Эти файлы нужны только для воспроизведения соревнования, но не для сборки публичной SI-базы.
 
-## Запуск пайплайна
+### Полный pipeline
 
 Из корня репозитория:
 
@@ -64,28 +180,31 @@ python scripts/apply_exact_neighbor.py
 python scripts/validate_submission.py submission_clean_et_log.csv
 ```
 
-При необходимости обновления ChEMBL:
+Ожидаемый результат: файл `submission_clean_et_log.csv` на 597 строк, с колонками `index` и `SI VACV`, без NaN и отрицательных значений. Проверка `validate_submission.py` должна вернуть `PASS`.
 
-```bash
-python scripts/download_public_data.py --refresh
-python scripts/build_ec50_cc50_pairs.py
-```
+### Запуск финального notebook
 
-## Запуск notebook
+Сначала выполнить `build_training_labels.py`, затем:
 
 ```bash
 cd notebooks
 jupyter nbconvert --to notebook --execute reproducible_clean_et_log.ipynb --output executed_clean_et_log.ipynb
 ```
 
-Перед запуском notebook должен быть создан `external_training_labels.csv` в корне репозитория шагом `build_training_labels.py`.
+### Обновление ChEMBL
 
-## Метрики и ограничения
+```bash
+python scripts/download_public_data.py --refresh
+python scripts/build_ec50_cc50_pairs.py
+```
 
-- OOF используется только для выбора моделей и коэффициентов.
-- Локальный reference восстановлен из предоставленных test-концентраций только для диагностики и не совпадает по надёжности с Kaggle.
-- Официальный public leaderboard охватывает лишь часть test, поэтому частный score не экстраполируется.
+ChEMBL API может временно ограничивать запросы; уже скачанные публичные таблицы включены в репозиторий.
+
+## 9. Ограничения интерпретации
+
 - Низкие границы вида `CC50 > X` не выдаются за точные измерения.
-- Для одинаковых SMILES с разными assay используются средние значения, потому что assay metadata не входят в модель.
+- Публичные assay могут отличаться клеточной линией и протоколом от скрытого scoring.
+- Adefovir и sid103210702 остаются трудными хвостовыми объектами: релевантных high-SI аналогов мало, и простое усложнение модели их не решает.
+- Локальная MSE существенно отличается от официальной, поэтому выводы делаются только с явным указанием источника оценки.
 
-Источники и ограничения внешней разметки описаны в `docs/DATA_SOURCES.md`, история экспериментов — в `docs/EXPERIMENTS.md`.
+Проект распространяется по лицензии MIT.
