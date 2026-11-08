@@ -67,6 +67,7 @@ vacv-si-prediction/
 │   └── pmc953_reproduction.json                # проверка PMC953-эксперимента
 ├── docs/
 │   ├── DATA_SOURCES.md                         # источники и правила включения
+│   ├── PUBLIC_SOLUTION_DATA_SOURCES.md         # инвентарь источников публичного решения
 │   └── EXPERIMENTS.md                          # подробности экспериментов
 ├── requirements.txt
 └── README.md

@@ -1,0 +1,11 @@
+{
+  "source_repository": "https://github.com/Velsaf-dev/molecular-ap-model",
+  "source_commit": "2697ab703963d34c748912048134b8b725633cd7",
+  "literature_source_identifiers": 263,
+  "pubchem_unique_aids": 474,
+  "literature_inventory": "data/source_inventory/literature_sources.csv",
+  "pubchem_inventory": "data/source_inventory/pubchem_assays.csv",
+  "contains_smiles_or_measurements_or_test_predictions": false,
+  "used_in_final_model": false,
+  "warning": "Inventory of leads, not validation of the public external_database"
+}
